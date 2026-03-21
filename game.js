@@ -1,3 +1,5 @@
+import { updateBullets, updateParticles, spawnBullet, spawnFlame } from "./logic";
+
 const canvas = document.getElementById("c");
 const ctx = canvas.getContext("2d");
 
@@ -38,29 +40,6 @@ let lastShotTime = 0;
 const SHOOT_COOLDOWN = 250; // ms
 const bullets = [];
 
-function spawnBullet() {
-	const noseX = ship.x + Math.cos(ship.angle) * ship.size;
-	const noseY = ship.y + Math.sin(ship.angle) * ship.size;
-	const BULLET_SPEED = 3;
-	bullets.push({
-		x: noseX,
-		y: noseY,
-		vx: Math.cos(ship.angle) * BULLET_SPEED + ship.vx,
-		vy: Math.sin(ship.angle) * BULLET_SPEED + ship.vy,
-	});
-}
-
-function updateBullets() {
-	for (let i = bullets.length - 1; i >= 0; i--) {
-		const b = bullets[i];
-		b.x += b.vx;
-		b.y += b.vy;
-
-		const outOfBounds = b.x < 0 || b.x > SIZE || b.y < 0 || b.y > SIZE;
-		if (outOfBounds) bullets.splice(i, 1);
-	}
-}
-
 function drawBullets() {
 	for (const b of bullets) {
 		// outer glow
@@ -79,31 +58,6 @@ function drawBullets() {
 
 // ── Thruster particles ───────────────────────────────────────
 const particles = [];
-
-function spawnFlame() {
-	const rearX = ship.x - Math.cos(ship.angle) * ship.size;
-	const rearY = ship.y - Math.sin(ship.angle) * ship.size;
-	const spread = (Math.random() - 0.5) * 0.6;
-	const speed = 1.5 + Math.random() * 2;
-	particles.push({
-		x: rearX,
-		y: rearY,
-		vx: -Math.cos(ship.angle + spread) * speed,
-		vy: -Math.sin(ship.angle + spread) * speed,
-		life: 1.0,
-		decay: 0.06 + Math.random() * 0.04,
-	});
-}
-
-function updateParticles() {
-	for (let i = particles.length - 1; i >= 0; i--) {
-		const p = particles[i];
-		p.x += p.vx;
-		p.y += p.vy;
-		p.life -= p.decay;
-		if (p.life <= 0) particles.splice(i, 1);
-	}
-}
 
 function drawParticles() {
 	for (const p of particles) {
@@ -147,12 +101,12 @@ function update() {
 	if (isThrust()) {
 		ship.vx += Math.cos(ship.angle) * ship.thrust;
 		ship.vy += Math.sin(ship.angle) * ship.thrust;
-		spawnFlame();
-		spawnFlame();
+		spawnFlame(ship, particles);
+		spawnFlame(ship, particles);
 	}
 
 	if (isShoot() && Date.now() - lastShotTime > SHOOT_COOLDOWN) {
-		spawnBullet();
+		spawnBullet(ship, bullets);
 		lastShotTime = Date.now();
 	}
 
@@ -167,8 +121,8 @@ function update() {
 	if (ship.y < 0) ship.y += SIZE;
 	if (ship.y > SIZE) ship.y -= SIZE;
 
-	updateParticles();
-	updateBullets();
+	updateParticles(particles);
+	updateBullets(bullets, SIZE);
 }
 
 // ── Render ────────────────────────────────────────────────────
