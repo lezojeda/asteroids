@@ -1,25 +1,13 @@
 import { updateBullets, updateParticles, spawnBullet, spawnFlame } from "./logic";
 import { drawBullets, drawParticles, drawShip } from "./render";
+import { SIZE, ship, bullets, particles, lastShotTime, setLastShotTime } from "./state";
+import { SHOOT_COOLDOWN } from "./constants";
 
 const canvas = document.getElementById("c");
 const ctx = canvas.getContext("2d");
 
-const SIZE = Math.min(window.innerWidth - 32, window.innerHeight - 60, 600);
 canvas.width = SIZE;
 canvas.height = SIZE;
-
-// ── Ship state ───────────────────────────────────────────────
-const ship = {
-	x: SIZE / 2,
-	y: SIZE / 2,
-	angle: -Math.PI / 2, // pointing up
-	vx: 0,
-	vy: 0,
-	rotSpeed: 0.055,
-	thrust: 0.18,
-	drag: 0.985,
-	size: 14,
-};
 
 // ── Input ────────────────────────────────────────────────────
 const keys = {};
@@ -36,14 +24,6 @@ const isRight = () => keys["ArrowRight"] || keys["d"] || keys["D"];
 const isThrust = () => keys["ArrowUp"] || keys["w"] || keys["W"];
 const isShoot = () => keys[" "];
 
-// ── Bullets ───────────────────────────────────────
-let lastShotTime = 0;
-const SHOOT_COOLDOWN = 250; // ms
-const bullets = [];
-
-// ── Thruster particles ───────────────────────────────────────
-const particles = [];
-
 // ── Update game state ─────────────────────────────────────────
 function update() {
 	if (isLeft()) ship.angle -= ship.rotSpeed;
@@ -58,7 +38,7 @@ function update() {
 
 	if (isShoot() && Date.now() - lastShotTime > SHOOT_COOLDOWN) {
 		spawnBullet(ship, bullets);
-		lastShotTime = Date.now();
+		setLastShotTime(Date.now());
 	}
 
 	ship.vx *= ship.drag;
