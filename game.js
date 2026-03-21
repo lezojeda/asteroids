@@ -2,27 +2,13 @@ import { updateBullets, updateParticles, spawnBullet, spawnFlame } from "./logic
 import { drawBullets, drawParticles, drawShip } from "./render";
 import { SIZE, ship, bullets, particles, lastShotTime, setLastShotTime } from "./state";
 import { SHOOT_COOLDOWN } from "./constants";
+import { isLeft, isRight, isThrust, isShoot } from "./input";
 
 const canvas = document.getElementById("c");
 const ctx = canvas.getContext("2d");
 
 canvas.width = SIZE;
 canvas.height = SIZE;
-
-// ── Input ────────────────────────────────────────────────────
-const keys = {};
-window.addEventListener("keydown", e => {
-	keys[e.key] = true;
-	e.preventDefault();
-});
-window.addEventListener("keyup", e => {
-	keys[e.key] = false;
-});
-
-const isLeft = () => keys["ArrowLeft"] || keys["a"] || keys["A"];
-const isRight = () => keys["ArrowRight"] || keys["d"] || keys["D"];
-const isThrust = () => keys["ArrowUp"] || keys["w"] || keys["W"];
-const isShoot = () => keys[" "];
 
 // ── Update game state ─────────────────────────────────────────
 function update() {
