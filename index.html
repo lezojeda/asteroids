@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>Asteroids</title>
+		<style>
+			* {
+				margin: 0;
+				padding: 0;
+				box-sizing: border-box;
+			}
+			body {
+				background: #000;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: center;
+				height: 100vh;
+				font-family: monospace;
+			}
+			canvas {
+				border: 1px solid #1a1a2e;
+				display: block;
+			}
+			#hud {
+				color: #444;
+				font-size: 11px;
+				margin-top: 8px;
+				letter-spacing: 0.1em;
+			}
+		</style>
+	</head>
+	<body>
+		<canvas id="c"></canvas>
+		<div id="hud">ARROWS / WASD — rotate &amp; thrust &nbsp;|&nbsp; wraps at edges</div>
+		<script src="game.js"></script>
+	</body>
+</html>
