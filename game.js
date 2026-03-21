@@ -1,4 +1,5 @@
 import { updateBullets, updateParticles, spawnBullet, spawnFlame } from "./logic";
+import { drawBullets, drawParticles, drawShip } from "./render";
 
 const canvas = document.getElementById("c");
 const ctx = canvas.getContext("2d");
@@ -40,58 +41,8 @@ let lastShotTime = 0;
 const SHOOT_COOLDOWN = 250; // ms
 const bullets = [];
 
-function drawBullets() {
-	for (const b of bullets) {
-		// outer glow
-		ctx.beginPath();
-		ctx.arc(b.x, b.y, 5, 0, Math.PI * 2);
-		ctx.fillStyle = "rgba(255, 60, 60, 0.2)";
-		ctx.fill();
-
-		// core
-		ctx.beginPath();
-		ctx.arc(b.x, b.y, 2, 0, Math.PI * 2);
-		ctx.fillStyle = "#f44";
-		ctx.fill();
-	}
-}
-
 // ── Thruster particles ───────────────────────────────────────
 const particles = [];
-
-function drawParticles() {
-	for (const p of particles) {
-		ctx.beginPath();
-		ctx.arc(p.x, p.y, 1.5 * p.life, 0, Math.PI * 2);
-		ctx.fillStyle = `rgba(255, ${Math.round(p.life * 160)}, 0, ${p.life})`;
-		ctx.fill();
-	}
-}
-
-// ── Draw ship ─────────────────────────────────────────────────
-function drawShip() {
-	const { x, y, angle, size } = ship;
-	ctx.save();
-	ctx.translate(x, y);
-	ctx.rotate(angle);
-
-	ctx.shadowColor = "#7af";
-	ctx.shadowBlur = 12;
-	ctx.strokeStyle = "#cce";
-	ctx.lineWidth = 1.5;
-	ctx.lineJoin = "round";
-	ctx.lineCap = "round";
-
-	ctx.beginPath();
-	ctx.moveTo(size, 0);
-	ctx.lineTo(-size * 0.65, -size * 0.6);
-	ctx.lineTo(-size * 0.3, 0);
-	ctx.lineTo(-size * 0.65, size * 0.6);
-	ctx.closePath();
-	ctx.stroke();
-
-	ctx.restore();
-}
 
 // ── Update game state ─────────────────────────────────────────
 function update() {
@@ -129,9 +80,9 @@ function update() {
 function draw() {
 	ctx.fillStyle = "#111";
 	ctx.fillRect(0, 0, SIZE, SIZE);
-	drawParticles();
-	drawBullets();
-	drawShip();
+	drawParticles(ctx, particles);
+	drawBullets(ctx, bullets);
+	drawShip(ctx, ship);
 }
 
 // ── Loop ──────────────────────────────────────────────────────
