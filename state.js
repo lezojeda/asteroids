@@ -16,6 +16,7 @@ export const ship = {
 
 export const bullets = [];
 export const particles = [];
+export const asteroids = [];
 
 export let lastShotTime = 0;
 export function setLastShotTime(t) {

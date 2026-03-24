@@ -49,3 +49,13 @@ export function drawShip(ctx, ship) {
 
 	ctx.restore();
 }
+
+// ── Draw asteroids ────────────────────────────────────────────
+export function drawAsteroids(ctx, asteroids) {
+	for (const a of asteroids) {
+		ctx.beginPath();
+		ctx.arc(a.x, a.y, a.radius, 0, Math.PI * 2);
+		ctx.strokeStyle = '#777';
+		ctx.stroke();
+	}
+}

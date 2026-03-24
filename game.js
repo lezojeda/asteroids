@@ -1,6 +1,15 @@
-import { updateBullets, updateParticles, spawnBullet, spawnFlame } from "./logic";
-import { drawBullets, drawParticles, drawShip } from "./render";
-import { SIZE, ship, bullets, particles, lastShotTime, setLastShotTime } from "./state";
+import {
+	updateBullets,
+	updateParticles,
+	spawnBullet,
+	spawnFlame,
+	updateShipPosition,
+	updateShipVelocity,
+	updateAsteroids,
+	spawnAsteroids,
+} from "./logic";
+import { drawAsteroids, drawBullets, drawParticles, drawShip } from "./render";
+import { SIZE, ship, bullets, particles, asteroids, lastShotTime, setLastShotTime } from "./state";
 import { SHOOT_COOLDOWN } from "./constants";
 import { isLeft, isRight, isThrust, isShoot } from "./input";
 
@@ -12,34 +21,28 @@ canvas.height = SIZE;
 
 // ── Update game state ─────────────────────────────────────────
 function update() {
+	if (asteroids.length < 6) {
+		spawnAsteroids(asteroids);
+	}
+
 	if (isLeft()) ship.angle -= ship.rotSpeed;
 	if (isRight()) ship.angle += ship.rotSpeed;
-
-	if (isThrust()) {
-		ship.vx += Math.cos(ship.angle) * ship.thrust;
-		ship.vy += Math.sin(ship.angle) * ship.thrust;
-		spawnFlame(ship, particles);
-		spawnFlame(ship, particles);
-	}
 
 	if (isShoot() && Date.now() - lastShotTime > SHOOT_COOLDOWN) {
 		spawnBullet(ship, bullets);
 		setLastShotTime(Date.now());
 	}
 
-	ship.vx *= ship.drag;
-	ship.vy *= ship.drag;
-	ship.x += ship.vx;
-	ship.y += ship.vy;
+	if (isThrust()) {
+		updateShipVelocity(ship);
+		spawnFlame(ship, particles);
+		spawnFlame(ship, particles);
+	}
 
-	// Wrap edges
-	if (ship.x < 0) ship.x += SIZE;
-	if (ship.x > SIZE) ship.x -= SIZE;
-	if (ship.y < 0) ship.y += SIZE;
-	if (ship.y > SIZE) ship.y -= SIZE;
-
+	updateShipPosition(ship);
 	updateParticles(particles);
 	updateBullets(bullets, SIZE);
+	updateAsteroids(asteroids)
 }
 
 // ── Render ────────────────────────────────────────────────────
@@ -49,6 +52,7 @@ function draw() {
 	drawParticles(ctx, particles);
 	drawBullets(ctx, bullets);
 	drawShip(ctx, ship);
+	drawAsteroids(ctx, asteroids);
 }
 
 // ── Loop ──────────────────────────────────────────────────────
