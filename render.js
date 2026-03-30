@@ -58,6 +58,9 @@ export function drawAsteroids(ctx, asteroids) {
 
 		const { sides } = asteroid;
 
+		// Step around the circle in equal angle increments, one step per side.
+		// Each vertex is offset from the base radius to create a jagged, rocky shape.
+		// First vertex starts the path, the rest extend it.
 		for (let i = 0; i < sides; i++) {
 			const angle = (i / sides) * Math.PI * 2;
 			const r = asteroid.radius + asteroid.offsets[i] * asteroid.radius;

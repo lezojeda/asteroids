@@ -100,7 +100,7 @@ export function spawnAsteroids(asteroids) {
 		const { vx, vy } = getAsteroidVelocities(side.x, side.y);
 		const sides = Math.floor(Math.random() * 6) + 5;
 
-		// Random per-vertex radius offsets, generated once to keep the shape stable across frames
+		// random per-vertex radius offsets, generated once to keep the shape stable across frames
 		const offsets = Array.from({ length: sides }, () => (Math.random() - 0.5) * 0.4);
 
 		asteroids.push({
