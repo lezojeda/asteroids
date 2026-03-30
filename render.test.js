@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { drawBullets, drawParticles, drawShip } from "./render.js";
+import { drawBullets, drawParticles, drawShip, drawAsteroids } from "./render.js";
 
 function makeMockCtx() {
 	return {
@@ -21,6 +21,18 @@ function makeMockCtx() {
 		lineCap: "",
 		shadowColor: "",
 		shadowBlur: 0,
+	};
+}
+
+function makeAsteroid(overrides = {}) {
+	const sides = 6;
+	return {
+		x: 100,
+		y: 100,
+		radius: 30,
+		sides,
+		offsets: Array(sides).fill(0),
+		...overrides,
 	};
 }
 
@@ -174,5 +186,65 @@ describe("drawShip", () => {
 		const big = { ...ship, size: 20 };
 		drawShip(ctx, big);
 		expect(ctx.moveTo).toHaveBeenCalledWith(20, 0);
+	});
+});
+
+// ── drawAsteroids ─────────────────────────────────────────────
+
+describe("drawAsteroids", () => {
+	let ctx;
+	beforeEach(() => {
+		ctx = makeMockCtx();
+	});
+
+	it("does nothing for empty array", () => {
+		drawAsteroids(ctx, []);
+		expect(ctx.beginPath).not.toHaveBeenCalled();
+	});
+
+	it("calls beginPath, closePath, stroke once per asteroid", () => {
+		drawAsteroids(ctx, [makeAsteroid()]);
+		expect(ctx.beginPath).toHaveBeenCalledTimes(1);
+		expect(ctx.closePath).toHaveBeenCalledTimes(1);
+		expect(ctx.stroke).toHaveBeenCalledTimes(1);
+	});
+
+	it("sets strokeStyle to #aaa", () => {
+		drawAsteroids(ctx, [makeAsteroid()]);
+		expect(ctx.strokeStyle).toBe("#aaa");
+	});
+
+	it("calls moveTo once and lineTo (sides - 1) times per asteroid", () => {
+		const asteroid = makeAsteroid({ sides: 6 });
+		drawAsteroids(ctx, [asteroid]);
+		expect(ctx.moveTo).toHaveBeenCalledTimes(1);
+		expect(ctx.lineTo).toHaveBeenCalledTimes(5);
+	});
+
+	it("first vertex uses moveTo at correct position", () => {
+		// offsets all 0 so r = radius exactly, angle 0 → x = x + radius, y = y
+		const asteroid = makeAsteroid({ x: 100, y: 100, radius: 30, sides: 6 });
+		drawAsteroids(ctx, [asteroid]);
+		expect(ctx.moveTo).toHaveBeenCalledWith(130, 100);
+	});
+
+	it("applies offsets to vertex radius", () => {
+		// offset of 0.5 on first vertex → r = 30 + 0.5 * 30 = 45
+		const offsets = [0.5, 0, 0, 0, 0, 0];
+		const asteroid = makeAsteroid({ x: 100, y: 100, radius: 30, sides: 6, offsets });
+		drawAsteroids(ctx, [asteroid]);
+		expect(ctx.moveTo).toHaveBeenCalledWith(145, 100);
+	});
+
+	it("scales draw calls with asteroid count", () => {
+		drawAsteroids(ctx, [makeAsteroid(), makeAsteroid()]);
+		expect(ctx.beginPath).toHaveBeenCalledTimes(2);
+		expect(ctx.stroke).toHaveBeenCalledTimes(2);
+	});
+
+	it("draws correct number of lineTo calls for different side counts", () => {
+		const asteroid = makeAsteroid({ sides: 8, offsets: Array(8).fill(0) });
+		drawAsteroids(ctx, [asteroid]);
+		expect(ctx.lineTo).toHaveBeenCalledTimes(7);
 	});
 });
