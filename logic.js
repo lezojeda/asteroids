@@ -31,11 +31,16 @@ export function updateBullets(bullets, size, asteroids) {
 			bullets.splice(i, 1);
 		} else {
 			// check if bullet collides with any one of the asteroids
-			for (const asteroid of asteroids) {
+			for (let j = asteroids.length - 1; j >= 0; j--) {
+				const asteroid = asteroids[j];
 				const dx = b.x - asteroid.x;
 				const dy = b.y - asteroid.y;
 				if (dx * dx + dy * dy < asteroid.radius * asteroid.radius) {
 					bullets.splice(i, 1);
+
+					// remove asteroid
+					asteroids.splice(j, 1);
+					// spawn two of one less size in place OR just remove if it's of size 1
 					break;
 				}
 			}
