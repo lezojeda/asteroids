@@ -91,12 +91,17 @@ export function spawnAsteroids(asteroids) {
 	const bottom = { x: Math.random() * SIZE, y: 0 };
 	const left = { x: 0, y: Math.random() * SIZE };
 
-	const sides = [top, right, bottom, left];
+	const screenSides = [top, right, bottom, left];
 
-	for (const side of sides) {
+	for (const side of screenSides) {
 		// get random size between 1, 2 or 3
 		const randomSize = Math.floor(Math.random() * 3) + 1;
+
 		const { vx, vy } = getAsteroidVelocities(side.x, side.y);
+		const sides = Math.floor(Math.random() * 6) + 5;
+
+		// Random per-vertex radius offsets, generated once to keep the shape stable across frames
+		const offsets = Array.from({ length: sides }, () => (Math.random() - 0.5) * 0.4);
 
 		asteroids.push({
 			x: side.x,
@@ -105,6 +110,8 @@ export function spawnAsteroids(asteroids) {
 			vy,
 			size: randomSize,
 			radius: randomSize * 20,
+			sides,
+			offsets,
 		});
 	}
 }

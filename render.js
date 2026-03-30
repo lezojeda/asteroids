@@ -52,10 +52,22 @@ export function drawShip(ctx, ship) {
 
 // ── Draw asteroids ────────────────────────────────────────────
 export function drawAsteroids(ctx, asteroids) {
-	for (const a of asteroids) {
+	for (const asteroid of asteroids) {
 		ctx.beginPath();
-		ctx.arc(a.x, a.y, a.radius, 0, Math.PI * 2);
-		ctx.strokeStyle = '#777';
+		ctx.strokeStyle = "#aaa";
+
+		const { sides } = asteroid;
+
+		for (let i = 0; i < sides; i++) {
+			const angle = (i / sides) * Math.PI * 2;
+			const r = asteroid.radius + asteroid.offsets[i] * asteroid.radius;
+			const x = asteroid.x + Math.cos(angle) * r;
+			const y = asteroid.y + Math.sin(angle) * r;
+
+			if (i === 0) ctx.moveTo(x, y);
+			else ctx.lineTo(x, y);
+		}
+		ctx.closePath();
 		ctx.stroke();
 	}
 }
