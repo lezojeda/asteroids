@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { updateBullets, updateParticles, spawnBullet, spawnFlame } from "./logic.js";
+import { updateBullets, updateShipParticles, spawnBullet, spawnFlame } from "./logic.js";
 
 // ── updateBullets ─────────────────────────────────────────────
 
@@ -52,31 +52,31 @@ describe("updateBullets", () => {
 	});
 });
 
-// ── updateParticles ───────────────────────────────────────────
+// ── updateShipParticles ───────────────────────────────────────────
 
-describe("updateParticles", () => {
+describe("updateShipParticles", () => {
 	it("moves particle by its velocity", () => {
 		const particles = [{ x: 100, y: 100, vx: 2, vy: -3, life: 1.0, decay: 0.1 }];
-		updateParticles(particles);
+		updateShipParticles(particles);
 		expect(particles[0].x).toBe(102);
 		expect(particles[0].y).toBe(97);
 	});
 
 	it("reduces life by decay each frame", () => {
 		const particles = [{ x: 0, y: 0, vx: 0, vy: 0, life: 1.0, decay: 0.1 }];
-		updateParticles(particles);
+		updateShipParticles(particles);
 		expect(particles[0].life).toBeCloseTo(0.9);
 	});
 
 	it("removes particle when life reaches 0", () => {
 		const particles = [{ x: 0, y: 0, vx: 0, vy: 0, life: 0.05, decay: 0.1 }];
-		updateParticles(particles);
+		updateShipParticles(particles);
 		expect(particles).toHaveLength(0);
 	});
 
 	it("keeps particle when life still positive", () => {
 		const particles = [{ x: 0, y: 0, vx: 0, vy: 0, life: 0.5, decay: 0.1 }];
-		updateParticles(particles);
+		updateShipParticles(particles);
 		expect(particles).toHaveLength(1);
 	});
 
@@ -85,7 +85,7 @@ describe("updateParticles", () => {
 			{ x: 0, y: 0, vx: 0, vy: 0, life: 0.05, decay: 0.1 },
 			{ x: 0, y: 0, vx: 0, vy: 0, life: 0.8, decay: 0.1 },
 		];
-		updateParticles(particles);
+		updateShipParticles(particles);
 		expect(particles).toHaveLength(1);
 		expect(particles[0].life).toBeCloseTo(0.7);
 	});

@@ -1,6 +1,6 @@
 import {
 	updateBullets,
-	updateParticles,
+	updateShipParticles,
 	spawnBullet,
 	spawnFlame,
 	updateShipPosition,
@@ -40,8 +40,8 @@ function update() {
 	}
 
 	updateShipPosition(ship);
-	updateParticles(particles);
-	updateBullets(bullets, SIZE);
+	updateShipParticles(particles);
+	updateBullets(bullets, SIZE, asteroids);
 	updateAsteroids(asteroids)
 }
 

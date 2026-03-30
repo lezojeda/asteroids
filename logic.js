@@ -20,18 +20,30 @@ export function updateShipPosition(ship) {
 	if (ship.y > SIZE) ship.y -= SIZE;
 }
 
-export function updateBullets(bullets, size) {
+export function updateBullets(bullets, size, asteroids) {
 	for (let i = bullets.length - 1; i >= 0; i--) {
 		const b = bullets[i];
 		b.x += b.vx;
 		b.y += b.vy;
 
 		const outOfBounds = b.x < 0 || b.x > size || b.y < 0 || b.y > size;
-		if (outOfBounds) bullets.splice(i, 1);
+		if (outOfBounds) {
+			bullets.splice(i, 1);
+		} else {
+			// check if bullet collides with any one of the asteroids
+			for (const asteroid of asteroids) {
+				const dx = b.x - asteroid.x;
+				const dy = b.y - asteroid.y;
+				if (dx * dx + dy * dy < asteroid.radius * asteroid.radius) {
+					bullets.splice(i, 1);
+					break;
+				}
+			}
+		}
 	}
 }
 
-export function updateParticles(particles) {
+export function updateShipParticles(particles) {
 	for (let i = particles.length - 1; i >= 0; i--) {
 		const p = particles[i];
 		p.x += p.vx;
