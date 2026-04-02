@@ -1,4 +1,4 @@
-import { SIZE } from "./state";
+import { setGameOver, SIZE } from "./state";
 
 /** State loop updates */
 
@@ -7,11 +7,24 @@ export function updateShipVelocity(ship) {
 	ship.vy += Math.sin(ship.angle) * ship.thrust;
 }
 
-export function updateShipPosition(ship) {
+export function updateShipPosition(ship, asteroids) {
 	ship.vx *= ship.drag;
 	ship.vy *= ship.drag;
 	ship.x += ship.vx;
 	ship.y += ship.vy;
+
+	// check if ship impacted any asteroid
+	for (let j = asteroids.length - 1; j >= 0; j--) {
+		const asteroid = asteroids[j];
+		const dx = ship.x - asteroid.x;
+		const dy = ship.y - asteroid.y;
+
+		if (dx * dx + dy * dy < asteroid.radius * asteroid.radius) {
+			setGameOver(true);
+
+			break;
+		}
+	}
 
 	// Wrap edges
 	if (ship.x < 0) ship.x += SIZE;

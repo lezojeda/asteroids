@@ -9,7 +9,17 @@ import {
 	spawnAsteroids,
 } from "./logic";
 import { drawAsteroids, drawBullets, drawParticles, drawShip } from "./render";
-import { SIZE, ship, bullets, particles, asteroids, lastShotTime, setLastShotTime } from "./state";
+import {
+	SIZE,
+	ship,
+	bullets,
+	particles,
+	asteroids,
+	lastShotTime,
+	setLastShotTime,
+	gameOver,
+	setGameOver,
+} from "./state";
 import { SHOOT_COOLDOWN } from "./constants";
 import { isLeft, isRight, isThrust, isShoot } from "./input";
 
@@ -39,27 +49,35 @@ function update() {
 		spawnFlame(ship, particles);
 	}
 
-	updateShipPosition(ship);
+	updateShipPosition(ship, asteroids);
 	updateShipParticles(particles);
 	updateBullets(bullets, SIZE, asteroids);
-	updateAsteroids(asteroids)
+	updateAsteroids(asteroids);
 }
 
 // ── Render ────────────────────────────────────────────────────
 function draw() {
-	ctx.fillStyle = "#111";
-	ctx.fillRect(0, 0, SIZE, SIZE);
-	drawParticles(ctx, particles);
-	drawBullets(ctx, bullets);
-	drawShip(ctx, ship);
-	drawAsteroids(ctx, asteroids);
+	if (!gameOver) {
+		ctx.fillStyle = "#111";
+		ctx.fillRect(0, 0, SIZE, SIZE);
+		drawParticles(ctx, particles);
+		drawBullets(ctx, bullets);
+		drawShip(ctx, ship);
+		drawAsteroids(ctx, asteroids);
+	} else {
+		ctx.font = "48px monospace";
+		ctx.textAlign = "center";
+		ctx.textBaseline = "middle";
+		ctx.fillStyle = "white";
+		ctx.fillText("GAME OVER", SIZE / 2, SIZE / 2);
+	}
 }
 
 // ── Loop ──────────────────────────────────────────────────────
 function loop() {
 	update();
 	draw();
-	requestAnimationFrame(loop);
+	if (!gameOver) requestAnimationFrame(loop);
 }
 
 loop();

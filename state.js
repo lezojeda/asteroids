@@ -22,3 +22,8 @@ export let lastShotTime = 0;
 export function setLastShotTime(t) {
 	lastShotTime = t;
 }
+
+export let gameOver = false;
+export function setGameOver(value) {
+	gameOver = value;
+}
