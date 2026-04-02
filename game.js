@@ -23,13 +23,20 @@ import {
 	setGameOver,
 } from "./state";
 import { SHOOT_COOLDOWN } from "./constants";
-import { isLeft, isRight, isThrust, isShoot, onAnyKey } from "./input";
+import { isLeft, isRight, isThrust, isShoot, onAnyKeyOrClick } from "./input";
 
 const canvas = document.getElementById("c");
 const ctx = canvas.getContext("2d");
 
 canvas.width = SIZE;
 canvas.height = SIZE;
+
+const bgGradient = ctx.createRadialGradient(
+    SIZE / 2, SIZE / 2, 0,
+    SIZE / 2, SIZE / 2, SIZE * 0.8
+);
+bgGradient.addColorStop(0, "#131322");
+bgGradient.addColorStop(1, "#080810");
 
 function resetGame() {
 	setGameOver(false);
@@ -43,7 +50,7 @@ function resetGame() {
 	ship.vy = 0;
 }
 
-onAnyKey(() => {
+onAnyKeyOrClick(() => {
 	if (!gameOver) return;
 	resetGame();
 	loop();
@@ -82,8 +89,9 @@ function update() {
 // ── Render ────────────────────────────────────────────────────
 function draw() {
 	if (!gameOver) {
-		ctx.fillStyle = "#111";
+		ctx.fillStyle = bgGradient;
 		ctx.fillRect(0, 0, SIZE, SIZE);
+
 		drawParticles(ctx, particles);
 		drawBullets(ctx, bullets);
 		drawShip(ctx, ship);
@@ -98,6 +106,10 @@ function draw() {
 		ctx.textBaseline = "middle";
 		ctx.fillStyle = "white";
 		ctx.fillText("GAME OVER", SIZE / 2, SIZE / 2);
+
+		ctx.font = "16px monospace";
+		ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
+		ctx.fillText("press any key or click to restart", SIZE / 2, SIZE / 2 + 48);
 	}
 }
 

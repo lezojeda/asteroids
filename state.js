@@ -1,6 +1,6 @@
 import { SHIP_ROT_SPEED, SHIP_THRUST, SHIP_DRAG, SHIP_SIZE } from "./constants";
 
-export const SIZE = Math.min(window.innerWidth - 32, window.innerHeight - 60, 600);
+export const SIZE = Math.min(window.innerWidth - 32, window.innerHeight - 60, 800);
 
 export const ship = {
 	x: SIZE / 2,

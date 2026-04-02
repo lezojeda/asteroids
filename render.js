@@ -55,6 +55,7 @@ export function drawAsteroids(ctx, asteroids) {
 	for (const asteroid of asteroids) {
 		ctx.beginPath();
 		ctx.strokeStyle = "#aaa";
+		ctx.lineWidth = asteroid.lineWidth;
 
 		const { sides } = asteroid;
 
@@ -70,6 +71,10 @@ export function drawAsteroids(ctx, asteroids) {
 			if (i === 0) ctx.moveTo(x, y);
 			else ctx.lineTo(x, y);
 		}
+		ctx.fillStyle = "rgba(255, 255, 255, 0.03)";
+		ctx.fill();
+		ctx.strokeStyle = "#aaa";
+		ctx.stroke();
 		ctx.closePath();
 		ctx.stroke();
 	}

@@ -14,6 +14,7 @@ export const isRight  = () => keys["ArrowRight"] || keys["KeyD"];
 export const isThrust = () => keys["ArrowUp"]    || keys["KeyW"];
 export const isShoot  = () => keys["Space"];
 
-export function onAnyKey(callback) {
+export function onAnyKeyOrClick(callback) {
     window.addEventListener("keydown", callback);
+    window.addEventListener("click", callback);
 }

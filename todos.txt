@@ -1,0 +1,7 @@
+- levels
+- sound
+- difficulty level
+- allow player to customize colors
+- slightly randomize colors on session
+- random power ups
+- multiplayer

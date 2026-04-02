@@ -19,7 +19,8 @@ export function updateShipPosition(ship, asteroids) {
 		const dx = ship.x - asteroid.x;
 		const dy = ship.y - asteroid.y;
 
-		if (dx * dx + dy * dy < asteroid.radius * asteroid.radius) {
+		const shipRadius = ship.size * 0.8;
+		if (dx * dx + dy * dy < (asteroid.radius + shipRadius) ** 2) {
 			setGameOver(true);
 
 			break;
@@ -158,6 +159,7 @@ export function spawnAsteroid(asteroids, x, y, size) {
 		radius: size * 20,
 		sides,
 		offsets: getRandomAsteroidVertexOffsets(sides),
+		lineWidth: size * 0.6 + (Math.random() - 0.5) * 0.3,
 	});
 }
 /** Asteroids utilities */
