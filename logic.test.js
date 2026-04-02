@@ -1,5 +1,13 @@
 import { describe, it, expect, vi } from "vitest";
-import { updateBullets, updateShipParticles, spawnBullet, spawnFlame } from "./logic.js";
+import {
+	updateBullets,
+	updateShipParticles,
+	spawnBullet,
+	spawnFlame,
+	splitAsteroid,
+	spawnAsteroid,
+	getInitialAsteroidVelocities,
+} from "./logic.js";
 
 // ── updateBullets ─────────────────────────────────────────────
 
@@ -49,6 +57,80 @@ describe("updateBullets", () => {
 		];
 		updateBullets(bullets, 600);
 		expect(bullets).toHaveLength(2);
+	});
+
+	it("does not remove asteroids if none have been hit", () => {
+		const asteroids = [
+			{
+				x: 400,
+				y: 400,
+				radius: 20,
+				size: 1,
+				vx: 0,
+				vy: 0,
+				sides: 6,
+				offsets: Array(6).fill(0),
+			},
+		];
+		const bullets = [{ x: 100, y: 100, vx: 0, vy: 0 }];
+		updateBullets(bullets, 600, asteroids);
+		expect(asteroids).toHaveLength(1);
+	});
+
+	it("removes asteroid of size 1 on hit", () => {
+		const asteroids = [
+			{
+				x: 100,
+				y: 100,
+				radius: 20,
+				size: 1,
+				vx: 0,
+				vy: 0,
+				sides: 6,
+				offsets: Array(6).fill(0),
+			},
+		];
+		const bullets = [{ x: 100, y: 100, vx: 0, vy: 0 }];
+		updateBullets(bullets, 600, asteroids);
+		expect(asteroids).toHaveLength(0);
+	});
+
+	it("divides asteroid of size 2 into two of size 1 on hit", () => {
+		const asteroids = [
+			{
+				x: 100,
+				y: 100,
+				radius: 40,
+				size: 2,
+				vx: 1,
+				vy: 0,
+				sides: 6,
+				offsets: Array(6).fill(0),
+			},
+		];
+		const bullets = [{ x: 100, y: 100, vx: 0, vy: 0 }];
+		updateBullets(bullets, 600, asteroids);
+		expect(asteroids).toHaveLength(2);
+		expect(asteroids.every(a => a.size === 1)).toBe(true);
+	});
+
+	it("divides asteroid of size 3 into two of size 2 on hit", () => {
+		const asteroids = [
+			{
+				x: 100,
+				y: 100,
+				radius: 60,
+				size: 3,
+				vx: 1,
+				vy: 0,
+				sides: 6,
+				offsets: Array(6).fill(0),
+			},
+		];
+		const bullets = [{ x: 100, y: 100, vx: 0, vy: 0 }];
+		updateBullets(bullets, 600, asteroids);
+		expect(asteroids).toHaveLength(2);
+		expect(asteroids.every(a => a.size === 2)).toBe(true);
 	});
 });
 
@@ -179,5 +261,151 @@ describe("spawnFlame", () => {
 		spawnFlame(ship, particles);
 		expect(particles[0].vx).toBeLessThan(0); // moving left = away from nose
 		vi.restoreAllMocks();
+	});
+});
+
+describe("Asteroids", () => {
+	// ── spawnAsteroid ─────────────────────────────────────────────
+
+	describe("spawnAsteroid", () => {
+		it("adds one asteroid to the array", () => {
+			const asteroids = [];
+			spawnAsteroid(asteroids, 0, 300, 2);
+			expect(asteroids).toHaveLength(1);
+		});
+
+		it("sets position from parameters", () => {
+			const asteroids = [];
+			spawnAsteroid(asteroids, 100, 200, 1);
+			expect(asteroids[0].x).toBe(100);
+			expect(asteroids[0].y).toBe(200);
+		});
+
+		it("sets radius as size * 20", () => {
+			const asteroids = [];
+			spawnAsteroid(asteroids, 0, 0, 3);
+			expect(asteroids[0].radius).toBe(60);
+		});
+
+		it("sets size from parameter", () => {
+			const asteroids = [];
+			spawnAsteroid(asteroids, 0, 0, 2);
+			expect(asteroids[0].size).toBe(2);
+		});
+
+		it("sides is between 5 and 10", () => {
+			const asteroids = [];
+			for (let i = 0; i < 50; i++) spawnAsteroid(asteroids, 0, 0, 1);
+			for (const a of asteroids) {
+				expect(a.sides).toBeGreaterThanOrEqual(5);
+				expect(a.sides).toBeLessThanOrEqual(10);
+			}
+		});
+
+		it("offsets length matches sides", () => {
+			const asteroids = [];
+			for (let i = 0; i < 20; i++) spawnAsteroid(asteroids, 0, 0, 1);
+			for (const a of asteroids) {
+				expect(a.offsets).toHaveLength(a.sides);
+			}
+		});
+	});
+
+	// ── getInitialAsteroidVelocities ──────────────────────────────
+
+	describe("getInitialAsteroidVelocities", () => {
+		it("returns vx and vy", () => {
+			const result = getInitialAsteroidVelocities(0, 300);
+			expect(result).toHaveProperty("vx");
+			expect(result).toHaveProperty("vy");
+		});
+
+		it("speed is approximately 1", () => {
+			// neutralize spread
+			vi.spyOn(Math, "random").mockReturnValue(0.5);
+			const { vx, vy } = getInitialAsteroidVelocities(0, 300);
+			const speed = Math.sqrt(vx * vx + vy * vy);
+			expect(speed).toBeCloseTo(1);
+			vi.restoreAllMocks();
+		});
+
+		it("points roughly toward center from left edge", () => {
+			vi.spyOn(Math, "random").mockReturnValue(0.5);
+			const { vx } = getInitialAsteroidVelocities(0, 300);
+			expect(vx).toBeGreaterThan(0); // spawned on left, should move right
+			vi.restoreAllMocks();
+		});
+
+		it("points roughly toward center from right edge", () => {
+			vi.spyOn(Math, "random").mockReturnValue(0.5);
+			const { vx } = getInitialAsteroidVelocities(600, 300);
+			expect(vx).toBeLessThan(0); // spawned on right, should move left
+			vi.restoreAllMocks();
+		});
+
+		it("points roughly toward center from top edge", () => {
+			vi.spyOn(Math, "random").mockReturnValue(0.5);
+			const { vy } = getInitialAsteroidVelocities(300, 0);
+			expect(vy).toBeGreaterThan(0); // spawned on top, should move down
+			vi.restoreAllMocks();
+		});
+	});
+
+	// ── splitAsteroid ─────────────────────────────────────────────
+
+	describe("splitAsteroid", () => {
+		const parent = { x: 200, y: 200, vx: 1, vy: 0, size: 2, radius: 40 };
+
+		it("spawns exactly two children", () => {
+			const asteroids = [];
+			splitAsteroid(asteroids, parent, 1);
+			expect(asteroids).toHaveLength(2);
+		});
+
+		it("children have the correct size", () => {
+			const asteroids = [];
+			splitAsteroid(asteroids, parent, 1);
+			expect(asteroids.every(a => a.size === 1)).toBe(true);
+		});
+
+		it("children spawn at parent position", () => {
+			const asteroids = [];
+			splitAsteroid(asteroids, parent, 1);
+			expect(asteroids[0].x).toBe(200);
+			expect(asteroids[0].y).toBe(200);
+			expect(asteroids[1].x).toBe(200);
+			expect(asteroids[1].y).toBe(200);
+		});
+
+		it("children have radius of childSize * 20", () => {
+			const asteroids = [];
+			splitAsteroid(asteroids, parent, 1);
+			expect(asteroids.every(a => a.radius === 20)).toBe(true);
+		});
+
+		it("children move in different directions", () => {
+			const asteroids = [];
+			splitAsteroid(asteroids, parent, 1);
+			const [a, b] = asteroids;
+			// symmetric split means vx is equal but vy is opposite
+			expect(a.vy).not.toBeCloseTo(b.vy);
+		});
+
+		it("children speed is approximately 1.5", () => {
+			const asteroids = [];
+			splitAsteroid(asteroids, parent, 1);
+			for (const a of asteroids) {
+				const speed = Math.sqrt(a.vx * a.vx + a.vy * a.vy);
+				expect(speed).toBeCloseTo(1.5);
+			}
+		});
+
+		it("offsets length matches sides", () => {
+			const asteroids = [];
+			splitAsteroid(asteroids, parent, 1);
+			for (const a of asteroids) {
+				expect(a.offsets).toHaveLength(a.sides);
+			}
+		});
 	});
 });

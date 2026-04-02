@@ -20,7 +20,7 @@ export function updateShipPosition(ship) {
 	if (ship.y > SIZE) ship.y -= SIZE;
 }
 
-export function updateBullets(bullets, size, asteroids) {
+export function updateBullets(bullets, size, asteroids = []) {
 	for (let i = bullets.length - 1; i >= 0; i--) {
 		const b = bullets[i];
 		b.x += b.vx;
@@ -35,12 +35,16 @@ export function updateBullets(bullets, size, asteroids) {
 				const asteroid = asteroids[j];
 				const dx = b.x - asteroid.x;
 				const dy = b.y - asteroid.y;
+
 				if (dx * dx + dy * dy < asteroid.radius * asteroid.radius) {
 					bullets.splice(i, 1);
 
-					// remove asteroid
-					asteroids.splice(j, 1);
 					// spawn two of one less size in place OR just remove if it's of size 1
+					asteroids.splice(j, 1);
+					if (asteroid.size > 1) {
+						splitAsteroid(asteroids, asteroid, asteroid.size - 1);
+					}
+
 					break;
 				}
 			}
@@ -101,6 +105,7 @@ export function spawnFlame(ship, particles) {
 	});
 }
 
+/** Asteroids logic */
 export function spawnAsteroids(asteroids) {
 	// Go over each of the 4 sides and spawn a certain amount of asteroids
 	const top = { x: Math.random() * SIZE, y: SIZE };
@@ -108,32 +113,28 @@ export function spawnAsteroids(asteroids) {
 	const bottom = { x: Math.random() * SIZE, y: 0 };
 	const left = { x: 0, y: Math.random() * SIZE };
 
-	const screenSides = [top, right, bottom, left];
-
-	for (const side of screenSides) {
-		// get random size between 1, 2 or 3
+	for (const side of [top, right, bottom, left]) {
 		const randomSize = Math.floor(Math.random() * 3) + 1;
-
-		const { vx, vy } = getAsteroidVelocities(side.x, side.y);
-		const sides = Math.floor(Math.random() * 6) + 5;
-
-		// random per-vertex radius offsets, generated once to keep the shape stable across frames
-		const offsets = Array.from({ length: sides }, () => (Math.random() - 0.5) * 0.4);
-
-		asteroids.push({
-			x: side.x,
-			y: side.y,
-			vx,
-			vy,
-			size: randomSize,
-			radius: randomSize * 20,
-			sides,
-			offsets,
-		});
+		spawnAsteroid(asteroids, side.x, side.y, randomSize);
 	}
 }
 
-function getAsteroidVelocities(x, y) {
+export function spawnAsteroid(asteroids, x, y, size) {
+	const sides = Math.floor(Math.random() * 6) + 5;
+	const { vx, vy } = getInitialAsteroidVelocities(x, y);
+	asteroids.push({
+		x,
+		y,
+		vx,
+		vy,
+		size,
+		radius: size * 20,
+		sides,
+		offsets: getRandomAsteroidVertexOffsets(sides),
+	});
+}
+
+export function getInitialAsteroidVelocities(x, y) {
 	const angle = Math.atan2(SIZE / 2 - y, SIZE / 2 - x); // atan2 turns a direction into an angle
 	const spread = (Math.random() - 0.5) * (Math.PI / 2); // ±45° slightly spread
 	const finalAngle = angle + spread;
@@ -142,4 +143,30 @@ function getAsteroidVelocities(x, y) {
 	const vy = Math.sin(finalAngle) * speed;
 
 	return { vx, vy };
+}
+
+export function splitAsteroid(asteroids, asteroid, childSize) {
+	const parentAngle = Math.atan2(asteroid.vy, asteroid.vx);
+	const speed = 1.5; // children move faster than parent
+	const offsets = [Math.PI / 4, -Math.PI / 4]; // split apart
+
+	for (const angleOffset of offsets) {
+		const angle = parentAngle + angleOffset;
+		const sides = Math.floor(Math.random() * 6) + 5;
+		asteroids.push({
+			x: asteroid.x,
+			y: asteroid.y,
+			vx: Math.cos(angle) * speed,
+			vy: Math.sin(angle) * speed,
+			size: childSize,
+			radius: childSize * 20,
+			sides,
+			offsets: getRandomAsteroidVertexOffsets(sides),
+		});
+	}
+}
+
+export function getRandomAsteroidVertexOffsets(sides) {
+	// random per-vertex radius offsets, generated once to keep the shape stable across frames
+	return Array.from({ length: sides }, () => (Math.random() - 0.5) * 0.4);
 }
