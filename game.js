@@ -3,10 +3,12 @@ import {
 	updateShipParticles,
 	spawnBullet,
 	spawnFlame,
+	spawnExplosion,
 	updateShipPosition,
 	updateShipVelocity,
 	updateAsteroids,
 	spawnAsteroids,
+	splitAsteroid,
 } from "./logic";
 import { drawAsteroids, drawBullets, drawParticles, drawShip } from "./render";
 import {
@@ -51,7 +53,11 @@ function update() {
 
 	updateShipPosition(ship, asteroids);
 	updateShipParticles(particles);
-	updateBullets(bullets, SIZE, asteroids);
+	const hits = updateBullets(bullets, SIZE, asteroids);
+	for (const hit of hits) {
+		spawnExplosion(hit.x, hit.y, particles);
+		if (hit.asteroid.size > 1) splitAsteroid(asteroids, hit.asteroid, hit.asteroid.size - 1);
+	}
 	updateAsteroids(asteroids);
 }
 

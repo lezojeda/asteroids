@@ -34,6 +34,7 @@ export function updateShipPosition(ship, asteroids) {
 }
 
 export function updateBullets(bullets, size, asteroids = []) {
+	const hits = [];
 	for (let i = bullets.length - 1; i >= 0; i--) {
 		const b = bullets[i];
 		b.x += b.vx;
@@ -52,17 +53,15 @@ export function updateBullets(bullets, size, asteroids = []) {
 				if (dx * dx + dy * dy < asteroid.radius * asteroid.radius) {
 					bullets.splice(i, 1);
 
-					// spawn two of one less size in place OR just remove if it's of size 1
+					bullets.splice(i, 1);
 					asteroids.splice(j, 1);
-					if (asteroid.size > 1) {
-						splitAsteroid(asteroids, asteroid, asteroid.size - 1);
-					}
-
+					hits.push({ x: asteroid.x, y: asteroid.y, asteroid });
 					break;
 				}
 			}
 		}
 	}
+	return hits;
 }
 
 export function updateShipParticles(particles) {
@@ -118,7 +117,22 @@ export function spawnFlame(ship, particles) {
 	});
 }
 
-/** Asteroids logic */
+export function spawnExplosion(x, y, particles) {
+	const count = Math.floor(Math.random() * 5) + 8; // 8 to 12
+	for (let i = 0; i < count; i++) {
+		const angle = Math.random() * Math.PI * 2;
+		const speed = 1 + Math.random() * 2;
+		particles.push({
+			x,
+			y,
+			vx: Math.cos(angle) * speed,
+			vy: Math.sin(angle) * speed,
+			life: 1.0,
+			decay: 0.04 + Math.random() * 0.03,
+		});
+	}
+}
+
 export function spawnAsteroids(asteroids) {
 	// Go over each of the 4 sides and spawn a certain amount of asteroids
 	const top = { x: Math.random() * SIZE, y: SIZE };
@@ -146,6 +160,7 @@ export function spawnAsteroid(asteroids, x, y, size) {
 		offsets: getRandomAsteroidVertexOffsets(sides),
 	});
 }
+/** Asteroids utilities */
 
 export function getInitialAsteroidVelocities(x, y) {
 	const angle = Math.atan2(SIZE / 2 - y, SIZE / 2 - x); // atan2 turns a direction into an angle
