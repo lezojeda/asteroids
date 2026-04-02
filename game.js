@@ -23,13 +23,31 @@ import {
 	setGameOver,
 } from "./state";
 import { SHOOT_COOLDOWN } from "./constants";
-import { isLeft, isRight, isThrust, isShoot } from "./input";
+import { isLeft, isRight, isThrust, isShoot, onAnyKey } from "./input";
 
 const canvas = document.getElementById("c");
 const ctx = canvas.getContext("2d");
 
 canvas.width = SIZE;
 canvas.height = SIZE;
+
+function resetGame() {
+	setGameOver(false);
+	bullets.length = 0;
+	particles.length = 0;
+	asteroids.length = 0;
+	ship.x = SIZE / 2;
+	ship.y = SIZE / 2;
+	ship.angle = -Math.PI / 2;
+	ship.vx = 0;
+	ship.vy = 0;
+}
+
+onAnyKey(() => {
+	if (!gameOver) return;
+	resetGame();
+	loop();
+});
 
 // ── Update game state ─────────────────────────────────────────
 function update() {
@@ -71,6 +89,10 @@ function draw() {
 		drawShip(ctx, ship);
 		drawAsteroids(ctx, asteroids);
 	} else {
+		// dim the last frame
+		ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
+		ctx.fillRect(0, 0, SIZE, SIZE);
+
 		ctx.font = "48px monospace";
 		ctx.textAlign = "center";
 		ctx.textBaseline = "middle";
