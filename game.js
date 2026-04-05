@@ -19,6 +19,7 @@ import {
 	drawScore,
 	drawPlayerShip,
 	drawLives,
+	drawWave,
 } from "./render";
 import {
 	SIZE,
@@ -131,6 +132,7 @@ function draw() {
 		drawAsteroids(ctx, asteroids);
 		drawScore(ctx, score, SIZE);
 		drawLives(ctx, lives);
+		drawWave(ctx, wave);
 		if (paused) drawPaused(ctx, SIZE);
 	}
 }

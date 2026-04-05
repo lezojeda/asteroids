@@ -1,6 +1,6 @@
 - saucers like in the classic Asteroids
-- lives
 - sound
+- high scores and persist list
 - difficulty level
 - allow player to customize colors/themes
 	- add retro theme based on https://en.wikipedia.org/wiki/Asteroids_(video_game)

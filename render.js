@@ -142,3 +142,12 @@ export function drawScore(ctx, score, size) {
 	ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
 	ctx.fillText(`${score}`, size - 16, 24);
 }
+
+// ── Draw wave ─────────────────────────────────────────────────
+export function drawWave(ctx, wave) {
+	ctx.textAlign = "left";
+	ctx.textBaseline = "top";
+	ctx.font = "16px monospace";
+	ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
+	ctx.fillText(`Wave: ${wave}`, 20, 48);
+}

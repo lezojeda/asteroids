@@ -1,5 +1,5 @@
 import { decreaseLives, lives, setGameOver, setLives, SIZE } from "./state";
-import { BULLET_SPEED, ASTEROID_RADIUS_SCALE } from "./constants";
+import { BULLET_SPEED, ASTEROID_RADIUS_SCALE, ASTEROID_SPEED } from "./constants";
 
 /** State loop updates */
 
@@ -179,7 +179,7 @@ function randomEdgePosition() {
 
 export function spawnAsteroid(asteroids, x, y, size) {
 	const sides = Math.floor(Math.random() * 6) + 5;
-	const { vx, vy } = getInitialAsteroidVelocities(x, y);
+	const { vx, vy } = getInitialAsteroidVelocities(x, y, size);
 	asteroids.push({
 		x,
 		y,
@@ -195,11 +195,11 @@ export function spawnAsteroid(asteroids, x, y, size) {
 
 /** Asteroids utilities */
 
-export function getInitialAsteroidVelocities(x, y) {
+export function getInitialAsteroidVelocities(x, y, size) {
 	const angle = Math.atan2(SIZE / 2 - y, SIZE / 2 - x); // atan2 turns a direction into an angle
 	const spread = (Math.random() - 0.5) * (Math.PI / 2); // ±45° slightly spread
 	const finalAngle = angle + spread;
-	const speed = 1; // tune later per size
+	const speed = ASTEROID_SPEED / size;
 	const vx = Math.cos(finalAngle) * speed;
 	const vy = Math.sin(finalAngle) * speed;
 
