@@ -1,7 +1,5 @@
 - saucers like in the classic Asteroids
-- points
 - lives
-- levels
 - sound
 - difficulty level
 - allow player to customize colors/themes
