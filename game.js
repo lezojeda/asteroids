@@ -10,7 +10,7 @@ import {
 	spawnAsteroids,
 	splitAsteroid,
 } from "./logic";
-import { drawAsteroids, drawBullets, drawParticles, drawShip } from "./render";
+import { drawAsteroids, drawBullets, drawParticles, drawScore, drawShip } from "./render";
 import {
 	SIZE,
 	ship,
@@ -21,8 +21,11 @@ import {
 	setLastShotTime,
 	gameOver,
 	setGameOver,
+	score,
+	addScore,
+	setScore,
 } from "./state";
-import { SHOOT_COOLDOWN } from "./constants";
+import { POINTS_BY_SIZE, SHOOT_COOLDOWN } from "./constants";
 import { isLeft, isRight, isThrust, isShoot, onAnyKeyOrClick } from "./input";
 
 const canvas = document.getElementById("c");
@@ -31,10 +34,7 @@ const ctx = canvas.getContext("2d");
 canvas.width = SIZE;
 canvas.height = SIZE;
 
-const bgGradient = ctx.createRadialGradient(
-    SIZE / 2, SIZE / 2, 0,
-    SIZE / 2, SIZE / 2, SIZE * 0.8
-);
+const bgGradient = ctx.createRadialGradient(SIZE / 2, SIZE / 2, 0, SIZE / 2, SIZE / 2, SIZE * 0.8);
 bgGradient.addColorStop(0, "#131322");
 bgGradient.addColorStop(1, "#080810");
 
@@ -48,6 +48,7 @@ function resetGame() {
 	ship.angle = -Math.PI / 2;
 	ship.vx = 0;
 	ship.vy = 0;
+	setScore(0);
 }
 
 onAnyKeyOrClick(() => {
@@ -82,6 +83,7 @@ function update() {
 	for (const hit of hits) {
 		spawnExplosion(hit.x, hit.y, particles);
 		if (hit.asteroid.size > 1) splitAsteroid(asteroids, hit.asteroid, hit.asteroid.size - 1);
+		addScore(POINTS_BY_SIZE[hit.asteroid.size]);
 	}
 	updateAsteroids(asteroids);
 }
@@ -96,6 +98,7 @@ function draw() {
 		drawBullets(ctx, bullets);
 		drawShip(ctx, ship);
 		drawAsteroids(ctx, asteroids);
+		drawScore(ctx, score, SIZE);
 	} else {
 		// dim the last frame
 		ctx.fillStyle = "rgba(0, 0, 0, 0.6)";

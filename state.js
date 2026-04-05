@@ -27,3 +27,11 @@ export let gameOver = false;
 export function setGameOver(value) {
 	gameOver = value;
 }
+
+export let score = 0;
+export function addScore(value) {
+	score += value;
+}
+export function setScore(value) {
+	score = value;
+}

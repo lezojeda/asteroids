@@ -1,7 +1,11 @@
+- saucers like in the classic Asteroids
+- points
+- lives
 - levels
 - sound
 - difficulty level
-- allow player to customize colors
+- allow player to customize colors/themes
+	- add retro theme based on https://en.wikipedia.org/wiki/Asteroids_(video_game)
 - slightly randomize colors on session
 - random power ups
 - multiplayer

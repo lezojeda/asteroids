@@ -79,3 +79,12 @@ export function drawAsteroids(ctx, asteroids) {
 		ctx.stroke();
 	}
 }
+
+// ── Draw score ────────────────────────────────────────────----
+export function drawScore(ctx, score, size) {
+	ctx.textAlign = "right";
+	ctx.textBaseline = "top";
+	ctx.font = "24px monospace";
+	ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
+	ctx.fillText(`${score}`, size - 16, 24);
+}
