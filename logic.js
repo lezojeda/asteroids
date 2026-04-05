@@ -53,8 +53,6 @@ export function updateBullets(bullets, size, asteroids = []) {
 
 				if (dx * dx + dy * dy < asteroid.radius * asteroid.radius) {
 					bullets.splice(i, 1);
-
-					bullets.splice(i, 1);
 					asteroids.splice(j, 1);
 					hits.push({ x: asteroid.x, y: asteroid.y, asteroid });
 					break;
