@@ -112,7 +112,7 @@ export function updateAsteroids(asteroids) {
 }
 
 /** Entities spawn */
-
+const bulletSound = new Audio("/sounds/laser1.wav");
 export function spawnBullet(ship, bullets) {
 	const noseX = ship.x + Math.cos(ship.angle) * ship.size;
 	const noseY = ship.y + Math.sin(ship.angle) * ship.size;
@@ -122,6 +122,8 @@ export function spawnBullet(ship, bullets) {
 		vx: Math.cos(ship.angle) * BULLET_SPEED + ship.vx,
 		vy: Math.sin(ship.angle) * BULLET_SPEED + ship.vy,
 	});
+	bulletSound.currentTime = 0; // rewind so it can replay quickly
+	bulletSound.play();
 }
 
 export function spawnFlame(ship, particles) {
