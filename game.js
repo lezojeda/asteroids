@@ -34,6 +34,9 @@ import {
 	setScore,
 	paused,
 	togglePause,
+	wave,
+	incrementWave,
+	setWave,
 } from "./state";
 import { POINTS_BY_SIZE, SHOOT_COOLDOWN } from "./constants";
 import { isLeft, isRight, isThrust, isShoot } from "./input";
@@ -60,6 +63,7 @@ function resetGame() {
 	ship.vx = 0;
 	ship.vy = 0;
 	setScore(0);
+	setWave(0);
 }
 
 window.addEventListener("keydown", e => {
@@ -80,8 +84,9 @@ window.addEventListener("click", e => {
 
 // ── Update game state ─────────────────────────────────────────
 function update() {
-	if (asteroids.length < 6) {
-		spawnAsteroids(asteroids);
+	if (asteroids.length === 0) {
+		incrementWave(); // all asteroids hit, start next wave
+		spawnAsteroids(asteroids, wave);
 	}
 
 	if (isLeft()) ship.angle -= ship.rotSpeed;

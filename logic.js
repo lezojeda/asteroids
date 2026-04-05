@@ -1,5 +1,5 @@
 import { setGameOver, SIZE } from "./state";
-import { BULLET_SPEED } from "./constants";
+import { BULLET_SPEED, ASTEROID_RADIUS_SCALE } from "./constants";
 
 /** State loop updates */
 
@@ -132,16 +132,25 @@ export function spawnExplosion(x, y, particles) {
 	}
 }
 
-export function spawnAsteroids(asteroids) {
-	// Go over each of the 4 sides and spawn a certain amount of asteroids
-	const top = { x: Math.random() * SIZE, y: SIZE };
-	const right = { x: SIZE, y: Math.random() * SIZE };
-	const bottom = { x: Math.random() * SIZE, y: 0 };
-	const left = { x: 0, y: Math.random() * SIZE };
+export function spawnAsteroids(asteroids, wave) {
+	const count = Math.min(4 + (wave - 1) * 2, 11);
+	for (let i = 0; i < count; i++) {
+		const { x, y } = randomEdgePosition();
+		spawnAsteroid(asteroids, x, y, 3);
+	}
+}
 
-	for (const side of [top, right, bottom, left]) {
-		const randomSize = Math.floor(Math.random() * 3) + 1;
-		spawnAsteroid(asteroids, side.x, side.y, randomSize);
+function randomEdgePosition() {
+	const side = Math.floor(Math.random() * 4);
+	switch (side) {
+		case 0:
+			return { x: Math.random() * SIZE, y: 0 }; // top
+		case 1:
+			return { x: Math.random() * SIZE, y: SIZE }; // bottom
+		case 2:
+			return { x: 0, y: Math.random() * SIZE }; // left
+		case 3:
+			return { x: SIZE, y: Math.random() * SIZE }; // right
 	}
 }
 
@@ -154,12 +163,13 @@ export function spawnAsteroid(asteroids, x, y, size) {
 		vx,
 		vy,
 		size,
-		radius: size * 20,
+		radius: size * ASTEROID_RADIUS_SCALE,
 		sides,
 		offsets: getRandomAsteroidVertexOffsets(sides),
 		lineWidth: size * 0.6 + (Math.random() - 0.5) * 0.3,
 	});
 }
+
 /** Asteroids utilities */
 
 export function getInitialAsteroidVelocities(x, y) {
@@ -187,7 +197,7 @@ export function splitAsteroid(asteroids, asteroid, childSize) {
 			vx: Math.cos(angle) * speed,
 			vy: Math.sin(angle) * speed,
 			size: childSize,
-			radius: childSize * 20,
+			radius: childSize * ASTEROID_RADIUS_SCALE,
 			sides,
 			offsets: getRandomAsteroidVertexOffsets(sides),
 		});

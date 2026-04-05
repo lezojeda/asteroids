@@ -38,3 +38,11 @@ export function addScore(value) {
 export function setScore(value) {
 	score = value;
 }
+
+export let wave = 0;
+export function incrementWave() {
+	wave += 1;
+}
+export function setWave(value) {
+	wave = value;
+}
