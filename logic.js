@@ -1,4 +1,4 @@
-import { setGameOver, SIZE } from "./state";
+import { decreaseLives, lives, setGameOver, setLives, SIZE } from "./state";
 import { BULLET_SPEED, ASTEROID_RADIUS_SCALE } from "./constants";
 
 /** State loop updates */
@@ -14,17 +14,40 @@ export function updateShipPosition(ship, asteroids) {
 	ship.x += ship.vx;
 	ship.y += ship.vy;
 
-	// check if ship impacted any asteroid
-	for (let j = asteroids.length - 1; j >= 0; j--) {
-		const asteroid = asteroids[j];
-		const dx = ship.x - asteroid.x;
-		const dy = ship.y - asteroid.y;
+	if (ship.invulnerable > 0) {
+		ship.invulnerable--;
+	}
 
-		const shipRadius = ship.size * 0.8;
-		if (dx * dx + dy * dy < (asteroid.radius + shipRadius) ** 2) {
-			setGameOver(true);
+	if (ship.invulnerable === 0) {
+		for (let j = asteroids.length - 1; j >= 0; j--) {
+			const asteroid = asteroids[j];
+			const dx = ship.x - asteroid.x;
+			const dy = ship.y - asteroid.y;
 
-			break;
+			const shipRadius = ship.size * 0.8;
+
+			if (dx * dx + dy * dy < (asteroid.radius + shipRadius) ** 2) {
+				decreaseLives();
+
+				if (lives <= 0) {
+					setGameOver(true);
+				} else {
+					// Respawn ship in center
+					ship.x = SIZE / 2;
+					ship.y = SIZE / 2;
+					ship.vx = 0;
+					ship.vy = 0;
+					ship.angle = -Math.PI / 2;
+
+					// Give 2 seconds of invulnerability (~120 frames at 60fps)
+					ship.invulnerable = 120;
+				}
+
+				splitAsteroid(asteroids, asteroids[j], asteroids[j].size - 1);
+				asteroids.splice(j, 1);
+
+				break;
+			}
 		}
 	}
 

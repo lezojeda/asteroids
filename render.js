@@ -26,19 +26,35 @@ export function drawParticles(ctx, particles) {
 }
 
 // ── Draw ship ─────────────────────────────────────────────────
-export function drawShip(ctx, ship) {
-	const { x, y, angle, size } = ship;
+export function drawPlayerShip(ctx, ship) {
+	const { x, y, angle, size, invulnerable } = ship;
+
+	// Flicker when invulnerable
+	if (invulnerable > 0 && Math.floor(Date.now() / 80) % 2 === 0) {
+		return;
+	}
+
+	drawShip(ctx, x, y, size, angle);
+}
+
+export function drawLives(ctx, lives) {
+	for (let i = 0; i < lives; i++) {
+		const x = 24 + i * 24;
+		const y = 24;
+		const size = 8;
+
+		drawShip(ctx, x, y, size);
+	}
+}
+
+function drawShip(ctx, x, y, size, angle) {
 	ctx.save();
 	ctx.translate(x, y);
-	ctx.rotate(angle);
-
-	ctx.shadowColor = "#7af";
-	ctx.shadowBlur = 12;
+	ctx.rotate(angle ?? -Math.PI / 2);
 	ctx.strokeStyle = "#cce";
 	ctx.lineWidth = 1.5;
 	ctx.lineJoin = "round";
 	ctx.lineCap = "round";
-
 	ctx.beginPath();
 	ctx.moveTo(size, 0);
 	ctx.lineTo(-size * 0.65, -size * 0.6);
@@ -46,7 +62,6 @@ export function drawShip(ctx, ship) {
 	ctx.lineTo(-size * 0.65, size * 0.6);
 	ctx.closePath();
 	ctx.stroke();
-
 	ctx.restore();
 }
 

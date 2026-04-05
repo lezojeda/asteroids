@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { drawBullets, drawParticles, drawShip, drawAsteroids } from "./render.js";
+import { drawBullets, drawParticles, drawPlayerShip, drawAsteroids } from "./render.js";
 
 function makeMockCtx() {
 	return {
@@ -144,47 +144,47 @@ describe("drawShip", () => {
 	const ship = { x: 300, y: 300, angle: 0, size: 14 };
 
 	it("calls save and restore", () => {
-		drawShip(ctx, ship);
+		drawPlayerShip(ctx, ship);
 		expect(ctx.save).toHaveBeenCalledTimes(1);
 		expect(ctx.restore).toHaveBeenCalledTimes(1);
 	});
 
 	it("translates to ship position", () => {
-		drawShip(ctx, ship);
+		drawPlayerShip(ctx, ship);
 		expect(ctx.translate).toHaveBeenCalledWith(300, 300);
 	});
 
 	it("rotates by ship angle", () => {
 		const rotated = { ...ship, angle: Math.PI / 4 };
-		drawShip(ctx, rotated);
+		drawPlayerShip(ctx, rotated);
 		expect(ctx.rotate).toHaveBeenCalledWith(Math.PI / 4);
 	});
 
 	it("sets strokeStyle", () => {
-		drawShip(ctx, ship);
+		drawPlayerShip(ctx, ship);
 		expect(ctx.strokeStyle).toBe("#cce");
 	});
 
 	it("sets lineWidth", () => {
-		drawShip(ctx, ship);
+		drawPlayerShip(ctx, ship);
 		expect(ctx.lineWidth).toBe(1.5);
 	});
 
 	it("calls beginPath, closePath, stroke", () => {
-		drawShip(ctx, ship);
+		drawPlayerShip(ctx, ship);
 		expect(ctx.beginPath).toHaveBeenCalledTimes(1);
 		expect(ctx.closePath).toHaveBeenCalledTimes(1);
 		expect(ctx.stroke).toHaveBeenCalledTimes(1);
 	});
 
 	it("draws nose at (size, 0)", () => {
-		drawShip(ctx, ship);
+		drawPlayerShip(ctx, ship);
 		expect(ctx.moveTo).toHaveBeenCalledWith(14, 0);
 	});
 
 	it("shape scales with ship size", () => {
 		const big = { ...ship, size: 20 };
-		drawShip(ctx, big);
+		drawPlayerShip(ctx, big);
 		expect(ctx.moveTo).toHaveBeenCalledWith(20, 0);
 	});
 });

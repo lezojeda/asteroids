@@ -12,6 +12,7 @@ export const ship = {
 	thrust: SHIP_THRUST,
 	drag: SHIP_DRAG,
 	size: SHIP_SIZE,
+	invulnerable: 0,
 };
 
 export const bullets = [];
@@ -29,7 +30,9 @@ export function setGameOver(value) {
 }
 
 export let paused = false;
-export function togglePause() { paused = !paused; }
+export function togglePause() {
+	paused = !paused;
+}
 
 export let score = 0;
 export function addScore(value) {
@@ -45,4 +48,12 @@ export function incrementWave() {
 }
 export function setWave(value) {
 	wave = value;
+}
+
+export let lives = 3;
+export function decreaseLives() {
+	lives -= 1;
+}
+export function setLives(value) {
+	lives = value;
 }

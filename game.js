@@ -17,7 +17,8 @@ import {
 	drawParticles,
 	drawPaused,
 	drawScore,
-	drawShip,
+	drawPlayerShip,
+	drawLives,
 } from "./render";
 import {
 	SIZE,
@@ -37,6 +38,8 @@ import {
 	wave,
 	incrementWave,
 	setWave,
+	lives,
+	setLives,
 } from "./state";
 import { POINTS_BY_SIZE, SHOOT_COOLDOWN } from "./constants";
 import { isLeft, isRight, isThrust, isShoot } from "./input";
@@ -64,6 +67,7 @@ function resetGame() {
 	ship.vy = 0;
 	setScore(0);
 	setWave(0);
+	setLives(3);
 }
 
 window.addEventListener("keydown", e => {
@@ -116,18 +120,19 @@ function update() {
 
 // ── Render ────────────────────────────────────────────────────
 function draw() {
-    if (gameOver) {
-        drawGameOver(ctx, SIZE);
-    } else {
-        ctx.fillStyle = bgGradient;
-        ctx.fillRect(0, 0, SIZE, SIZE);
-        drawParticles(ctx, particles);
-        drawBullets(ctx, bullets);
-        drawShip(ctx, ship);
-        drawAsteroids(ctx, asteroids);
-        drawScore(ctx, score, SIZE);
-        if (paused) drawPaused(ctx, SIZE);
-    }
+	if (gameOver) {
+		drawGameOver(ctx, SIZE);
+	} else {
+		ctx.fillStyle = bgGradient;
+		ctx.fillRect(0, 0, SIZE, SIZE);
+		drawParticles(ctx, particles);
+		drawBullets(ctx, bullets);
+		drawPlayerShip(ctx, ship);
+		drawAsteroids(ctx, asteroids);
+		drawScore(ctx, score, SIZE);
+		drawLives(ctx, lives);
+		if (paused) drawPaused(ctx, SIZE);
+	}
 }
 
 // ── Loop ──────────────────────────────────────────────────────
