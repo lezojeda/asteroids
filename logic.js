@@ -1,4 +1,5 @@
 import { setGameOver, SIZE } from "./state";
+import { BULLET_SPEED } from "./constants";
 
 /** State loop updates */
 
@@ -92,7 +93,6 @@ export function updateAsteroids(asteroids) {
 export function spawnBullet(ship, bullets) {
 	const noseX = ship.x + Math.cos(ship.angle) * ship.size;
 	const noseY = ship.y + Math.sin(ship.angle) * ship.size;
-	const BULLET_SPEED = 3;
 	bullets.push({
 		x: noseX,
 		y: noseY,
