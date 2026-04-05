@@ -80,7 +80,46 @@ export function drawAsteroids(ctx, asteroids) {
 	}
 }
 
-// ── Draw score ────────────────────────────────────────────----
+// ── Draw game over ────────────────────────────────────────────
+function dim(ctx, size) {
+	// dim the last frame
+	ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
+	ctx.fillRect(0, 0, size, size);
+}
+
+export function drawGameOver(ctx, size) {
+	dim(ctx, size);
+
+	ctx.font = "48px monospace";
+	ctx.textAlign = "center";
+	ctx.textBaseline = "middle";
+	ctx.fillStyle = "white";
+	ctx.fillText("GAME OVER", size / 2, size / 2);
+
+	ctx.font = "16px monospace";
+	ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
+	ctx.fillText("press any key or click to restart", size / 2, size / 2 + 48);
+}
+
+// ── Draw pause ────────────────────────────────────────────
+export function drawPaused(ctx, size) {
+	dim(ctx, size);
+
+	ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
+	ctx.fillRect(0, 0, size, size);
+
+	ctx.font = "32px monospace";
+	ctx.textAlign = "center";
+	ctx.textBaseline = "middle";
+	ctx.fillStyle = "white";
+	ctx.fillText("PAUSED", size / 2, size / 2);
+
+	ctx.font = "16px monospace";
+	ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
+	ctx.fillText("press P to resume", size / 2, size / 2 + 48);
+}
+
+// ── Draw score ────────────────────────────────────────────────
 export function drawScore(ctx, score, size) {
 	ctx.textAlign = "right";
 	ctx.textBaseline = "top";

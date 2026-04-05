@@ -10,7 +10,15 @@ import {
 	spawnAsteroids,
 	splitAsteroid,
 } from "./logic";
-import { drawAsteroids, drawBullets, drawParticles, drawScore, drawShip } from "./render";
+import {
+	drawAsteroids,
+	drawBullets,
+	drawGameOver,
+	drawParticles,
+	drawPaused,
+	drawScore,
+	drawShip,
+} from "./render";
 import {
 	SIZE,
 	ship,
@@ -24,9 +32,11 @@ import {
 	score,
 	addScore,
 	setScore,
+	paused,
+	togglePause,
 } from "./state";
 import { POINTS_BY_SIZE, SHOOT_COOLDOWN } from "./constants";
-import { isLeft, isRight, isThrust, isShoot, onAnyKeyOrClick } from "./input";
+import { isLeft, isRight, isThrust, isShoot } from "./input";
 
 const canvas = document.getElementById("c");
 const ctx = canvas.getContext("2d");
@@ -38,6 +48,7 @@ const bgGradient = ctx.createRadialGradient(SIZE / 2, SIZE / 2, 0, SIZE / 2, SIZ
 bgGradient.addColorStop(0, "#131322");
 bgGradient.addColorStop(1, "#080810");
 
+// ── Game input handlers ─────────────────────────────────────────
 function resetGame() {
 	setGameOver(false);
 	bullets.length = 0;
@@ -51,7 +62,17 @@ function resetGame() {
 	setScore(0);
 }
 
-onAnyKeyOrClick(() => {
+window.addEventListener("keydown", e => {
+	if (e.code === "KeyP" && !gameOver) togglePause();
+});
+
+window.addEventListener("keydown", e => {
+	if (!gameOver) return;
+	resetGame();
+	loop();
+});
+
+window.addEventListener("click", e => {
 	if (!gameOver) return;
 	resetGame();
 	loop();
@@ -90,35 +111,24 @@ function update() {
 
 // ── Render ────────────────────────────────────────────────────
 function draw() {
-	if (!gameOver) {
-		ctx.fillStyle = bgGradient;
-		ctx.fillRect(0, 0, SIZE, SIZE);
-
-		drawParticles(ctx, particles);
-		drawBullets(ctx, bullets);
-		drawShip(ctx, ship);
-		drawAsteroids(ctx, asteroids);
-		drawScore(ctx, score, SIZE);
-	} else {
-		// dim the last frame
-		ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
-		ctx.fillRect(0, 0, SIZE, SIZE);
-
-		ctx.font = "48px monospace";
-		ctx.textAlign = "center";
-		ctx.textBaseline = "middle";
-		ctx.fillStyle = "white";
-		ctx.fillText("GAME OVER", SIZE / 2, SIZE / 2);
-
-		ctx.font = "16px monospace";
-		ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
-		ctx.fillText("press any key or click to restart", SIZE / 2, SIZE / 2 + 48);
-	}
+    if (gameOver) {
+        drawGameOver(ctx, SIZE);
+    } else {
+        ctx.fillStyle = bgGradient;
+        ctx.fillRect(0, 0, SIZE, SIZE);
+        drawParticles(ctx, particles);
+        drawBullets(ctx, bullets);
+        drawShip(ctx, ship);
+        drawAsteroids(ctx, asteroids);
+        drawScore(ctx, score, SIZE);
+        if (paused) drawPaused(ctx, SIZE);
+    }
 }
 
 // ── Loop ──────────────────────────────────────────────────────
+
 function loop() {
-	update();
+	if (!paused) update();
 	draw();
 	if (!gameOver) requestAnimationFrame(loop);
 }

@@ -28,6 +28,9 @@ export function setGameOver(value) {
 	gameOver = value;
 }
 
+export let paused = false;
+export function togglePause() { paused = !paused; }
+
 export let score = 0;
 export function addScore(value) {
 	score += value;
