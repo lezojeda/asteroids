@@ -15,6 +15,12 @@ export const ship = {
 	invulnerable: 0,
 };
 
+export const saucers = [];
+
+export function clearSaucers() {
+    saucers.length = 0;
+}
+
 export const bullets = [];
 export const particles = [];
 export const asteroids = [];

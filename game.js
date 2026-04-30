@@ -7,8 +7,10 @@ import {
 	updateShipPosition,
 	updateShipVelocity,
 	updateAsteroids,
+	updateSaucers,
 	spawnAsteroids,
 	splitAsteroid,
+	spawnSaucer,
 } from "./logic";
 import {
 	drawAsteroids,
@@ -20,6 +22,7 @@ import {
 	drawPlayerShip,
 	drawLives,
 	drawWave,
+	drawSaucers,
 } from "./render";
 import {
 	SIZE,
@@ -27,6 +30,7 @@ import {
 	bullets,
 	particles,
 	asteroids,
+	saucers,
 	lastShotTime,
 	setLastShotTime,
 	gameOver,
@@ -41,6 +45,7 @@ import {
 	setWave,
 	lives,
 	setLives,
+	clearSaucers,
 } from "./state";
 import { POINTS_BY_SIZE, SHOOT_COOLDOWN } from "./constants";
 import { isLeft, isRight, isThrust, isShoot } from "./input";
@@ -69,6 +74,7 @@ function resetGame() {
 	setScore(0);
 	setWave(0);
 	setLives(3);
+	clearSaucers();
 }
 
 window.addEventListener("keydown", e => {
@@ -89,19 +95,13 @@ window.addEventListener("click", e => {
 
 // ── Update game state ─────────────────────────────────────────
 function update() {
-	if (asteroids.length === 0) {
-		incrementWave(); // all asteroids hit, start next wave
-		spawnAsteroids(asteroids, wave);
-	}
-
+	// Ship
 	if (isLeft()) ship.angle -= ship.rotSpeed;
 	if (isRight()) ship.angle += ship.rotSpeed;
-
 	if (isShoot() && Date.now() - lastShotTime > SHOOT_COOLDOWN) {
 		spawnBullet(ship, bullets);
 		setLastShotTime(Date.now());
 	}
-
 	if (isThrust()) {
 		updateShipVelocity(ship);
 		spawnFlame(ship, particles);
@@ -110,6 +110,8 @@ function update() {
 
 	updateShipPosition(ship, asteroids);
 	updateShipParticles(particles);
+
+	// Bullets
 	const hits = updateBullets(bullets, SIZE, asteroids);
 	for (const hit of hits) {
 		const size = hit.asteroid.size;
@@ -120,7 +122,23 @@ function update() {
 		}
 		addScore(POINTS_BY_SIZE[size]);
 	}
+
+	// Asteroids
 	updateAsteroids(asteroids);
+
+	// Saucers
+	if (saucers.length === 0 && !gameOver && !paused) {
+		spawnSaucer(saucers);
+	}
+	if (saucers.length > 0) {
+		updateSaucers(saucers);
+	}
+
+	if (asteroids.length === 0) {
+		incrementWave(); // all asteroids hit, start next wave
+		spawnAsteroids(asteroids, wave);
+		clearSaucers();
+	}
 }
 
 // ── Render ────────────────────────────────────────────────────
@@ -137,6 +155,8 @@ function draw() {
 		drawScore(ctx, score, SIZE);
 		drawLives(ctx, lives);
 		drawWave(ctx, wave);
+		drawSaucers(ctx, saucers);
+
 		if (paused) drawPaused(ctx, SIZE);
 	}
 }

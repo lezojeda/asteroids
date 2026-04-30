@@ -112,6 +112,27 @@ export function updateAsteroids(asteroids) {
 	}
 }
 
+export function updateSaucers(saucers) {
+    for (let i = saucers.length - 1; i >= 0; i--) {
+        const s = saucers[i];
+        
+        s.x += s.vx;
+        s.y += s.vy;
+
+        // gentle vertical movement
+        s.vy += (Math.random() - 0.5) * 0.1;
+        if (Math.abs(s.vy) > 1.3) s.vy *= 0.92;
+
+        // wrap horizontally
+        if (s.x < -50) s.x = SIZE + 50;
+        if (s.x > SIZE + 50) s.x = -50;
+
+        // keep vertical bounds
+        if (s.y < 30) s.vy = Math.abs(s.vy) * 0.8;
+        if (s.y > SIZE - 30) s.vy = -Math.abs(s.vy) * 0.8;
+    }
+}
+
 /** Entities spawn */
 export function spawnBullet(ship, bullets) {
 	const noseX = ship.x + Math.cos(ship.angle) * ship.size;
@@ -143,27 +164,27 @@ export function spawnFlame(ship, particles) {
 }
 
 export function spawnAsteroidExplosion(x, y, particles, asteroidSize = 1) {
-    const scale = asteroidSize;
-    const baseSize = 2.2 + scale * 2.1;
-    const baseDecay = 0.022 + 0.018 / scale;
-	
-    const count = Math.floor(8 + Math.random() * 6 * scale);
-    for (let i = 0; i < count; i++) {
-        const angle = Math.random() * Math.PI * 2;
-        const speed = (1.1 + Math.random() * 2.3) * (0.9 + scale * 0.5);
+	const scale = asteroidSize;
+	const baseSize = 2.2 + scale * 2.1;
+	const baseDecay = 0.022 + 0.018 / scale;
 
-        particles.push({
-            x,
-            y,
-            vx: Math.cos(angle) * speed,
-            vy: Math.sin(angle) * speed,
-            life: 1.0,
-            decay: baseDecay + Math.random() * 0.012,
-            size: baseSize * (0.65 + Math.random() * 0.85),
-        });
-    }
+	const count = Math.floor(8 + Math.random() * 6 * scale);
+	for (let i = 0; i < count; i++) {
+		const angle = Math.random() * Math.PI * 2;
+		const speed = (1.1 + Math.random() * 2.3) * (0.9 + scale * 0.5);
 
-    playExplosionSound(asteroidSize);
+		particles.push({
+			x,
+			y,
+			vx: Math.cos(angle) * speed,
+			vy: Math.sin(angle) * speed,
+			life: 1.0,
+			decay: baseDecay + Math.random() * 0.012,
+			size: baseSize * (0.65 + Math.random() * 0.85),
+		});
+	}
+
+	playExplosionSound(asteroidSize);
 }
 
 export function spawnAsteroids(asteroids, wave) {
@@ -241,4 +262,20 @@ export function splitAsteroid(asteroids, asteroid, childSize) {
 export function getRandomAsteroidVertexOffsets(sides) {
 	// random per-vertex radius offsets, generated once to keep the shape stable across frames
 	return Array.from({ length: sides }, () => (Math.random() - 0.5) * 0.4);
+}
+
+export function spawnSaucer(saucers) {
+	const fromLeft = Math.random() < 0.5;
+
+	const saucer = {
+		x: fromLeft ? -25 : SIZE + 25,
+		y: 60 + Math.random() * (SIZE - 120),
+		vx: fromLeft ? 1.7 : -1.7,
+		vy: (Math.random() - 0.5) * 1.0,
+		radius: 18,
+		type: "big",
+		shootTimer: 60 + Math.floor(Math.random() * 60),
+	};
+
+	saucers.push(saucer);
 }

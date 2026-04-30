@@ -1,6 +1,5 @@
 - saucers like in the classic Asteroids
 - sound
-	- asteroid destruction
 	- ship destruction
 	- button to mute
 - high scores and persist list

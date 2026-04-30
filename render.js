@@ -17,15 +17,15 @@ export function drawBullets(ctx, bullets) {
 
 // ── Draw particles ────────────────────────────────────────────
 export function drawParticles(ctx, particles) {
-    for (const p of particles) {
-        const radius = (p.size || 1.5) * p.life;
-        
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, radius, 0, Math.PI * 2);
-        
-        ctx.fillStyle = `rgba(255, ${Math.round(p.life * 160)}, 0, ${p.life})`;
-        ctx.fill();
-    }
+	for (const p of particles) {
+		const radius = (p.size || 1.5) * p.life;
+
+		ctx.beginPath();
+		ctx.arc(p.x, p.y, radius, 0, Math.PI * 2);
+
+		ctx.fillStyle = `rgba(255, ${Math.round(p.life * 160)}, 0, ${p.life})`;
+		ctx.fill();
+	}
 }
 
 // ── Draw ship ─────────────────────────────────────────────────
@@ -153,4 +153,32 @@ export function drawWave(ctx, wave) {
 	ctx.font = "16px monospace";
 	ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
 	ctx.fillText(`Wave: ${wave}`, 20, 48);
+}
+
+// ── Draw Saucers ──────────────────────────────────────────────
+export function drawSaucers(ctx, saucers) {
+	for (const saucer of saucers) {
+		ctx.save();
+		ctx.translate(saucer.x, saucer.y);
+
+		ctx.lineWidth = 2;
+		ctx.lineJoin = "round";
+		ctx.strokeStyle = "rgb(180, 180, 180)";
+
+		function trapezoid(y, topW, bottomW, h) {
+			ctx.beginPath();
+			ctx.moveTo(-topW / 2, y);
+			ctx.lineTo(topW / 2, y);
+			ctx.lineTo(bottomW / 2, y + h);
+			ctx.lineTo(-bottomW / 2, y + h);
+			ctx.closePath();
+			ctx.stroke();
+		}
+
+		trapezoid(-16, 6, 12, 6);
+		trapezoid(-10, 12, 28, 6);
+		trapezoid(-4, 28, 12, 6);
+
+		ctx.restore();
+	}
 }

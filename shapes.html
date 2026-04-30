@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>Shape debugging</title>
+		<style>
+			* {
+				margin: 0;
+				padding: 0;
+				box-sizing: border-box;
+			}
+			body {
+				background: #222;
+			}
+		</style>
+	</head>
+	<body>
+		<canvas id="c" width="400" height="300"></canvas>
+
+		<script>
+			const ctx = document
+				.getElementById("c")
+				.getContext("2d");
+
+			function drawSaucers(ctx, saucers) {
+				for (const saucer of saucers) {
+					ctx.save();
+					ctx.translate(saucer.x, saucer.y);
+
+					ctx.strokeStyle = "rgb(180, 180, 180)";
+					ctx.lineWidth = 1;
+
+					function trapezoid(y, topW, bottomW, h) {
+						ctx.beginPath();
+						ctx.moveTo(-topW / 2, y);
+						ctx.lineTo(topW / 2, y);
+						ctx.lineTo(bottomW / 2, y + h);
+						ctx.lineTo(-bottomW / 2, y + h);
+						ctx.closePath();
+						ctx.stroke();
+					}
+
+					trapezoid(-16, 6, 12, 6);
+					trapezoid(-10, 12, 28, 6);
+					trapezoid(-4, 28, 12, 6);
+
+					ctx.restore();
+				}
+			}
+
+			drawSaucers(ctx, [
+				{
+					x: 200,
+					y: 150
+				}
+			]);
+		</script>
+	</body>
+</html>
