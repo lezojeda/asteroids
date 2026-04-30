@@ -92,7 +92,6 @@ export function drawAsteroids(ctx, asteroids) {
 		ctx.fillStyle = "rgba(255, 255, 255, 0.03)";
 		ctx.fill();
 		ctx.strokeStyle = "#aaa";
-		ctx.stroke();
 		ctx.closePath();
 		ctx.stroke();
 	}
