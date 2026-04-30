@@ -112,8 +112,12 @@ function update() {
 	updateShipParticles(particles);
 	const hits = updateBullets(bullets, SIZE, asteroids);
 	for (const hit of hits) {
-		spawnExplosion(hit.x, hit.y, particles);
-		if (hit.asteroid.size > 1) splitAsteroid(asteroids, hit.asteroid, hit.asteroid.size - 1);
+		const explosionScale = hit.asteroid.size;
+		spawnExplosion(hit.x, hit.y, particles, explosionScale);
+
+		if (hit.asteroid.size > 1) {
+			splitAsteroid(asteroids, hit.asteroid, hit.asteroid.size - 1);
+		}
 		addScore(POINTS_BY_SIZE[hit.asteroid.size]);
 	}
 	updateAsteroids(asteroids);

@@ -141,18 +141,24 @@ export function spawnFlame(ship, particles) {
 	});
 }
 
-export function spawnExplosion(x, y, particles) {
-	const count = Math.floor(Math.random() * 5) + 8; // 8 to 12
+export function spawnExplosion(x, y, particles, scale = 1.0) {
+	const count = Math.floor(8 + Math.random() * 6 * scale); // 8–13 base, scaled up/down
+
+	const baseSize = 2.2 + scale * 2.1;
+	const baseDecay = 0.022 + 0.018 / scale; // more delay for bigger entities
+
 	for (let i = 0; i < count; i++) {
 		const angle = Math.random() * Math.PI * 2;
-		const speed = 1 + Math.random() * 2;
+		const speed = (1.1 + Math.random() * 2.3) * (0.9 + scale * 0.5);
+
 		particles.push({
 			x,
 			y,
 			vx: Math.cos(angle) * speed,
 			vy: Math.sin(angle) * speed,
 			life: 1.0,
-			decay: 0.04 + Math.random() * 0.03,
+			decay: baseDecay + Math.random() * 0.012,
+			size: baseSize * (0.65 + Math.random() * 0.85),
 		});
 	}
 }

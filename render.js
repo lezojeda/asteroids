@@ -17,12 +17,15 @@ export function drawBullets(ctx, bullets) {
 
 // ── Draw particles ────────────────────────────────────────────
 export function drawParticles(ctx, particles) {
-	for (const p of particles) {
-		ctx.beginPath();
-		ctx.arc(p.x, p.y, 1.5 * p.life, 0, Math.PI * 2);
-		ctx.fillStyle = `rgba(255, ${Math.round(p.life * 160)}, 0, ${p.life})`;
-		ctx.fill();
-	}
+    for (const p of particles) {
+        const radius = (p.size || 1.5) * p.life;
+        
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, radius, 0, Math.PI * 2);
+        
+        ctx.fillStyle = `rgba(255, ${Math.round(p.life * 160)}, 0, ${p.life})`;
+        ctx.fill();
+    }
 }
 
 // ── Draw ship ─────────────────────────────────────────────────
