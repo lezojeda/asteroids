@@ -3,7 +3,7 @@ import {
 	updateShipParticles,
 	spawnBullet,
 	spawnFlame,
-	spawnExplosion,
+	spawnAsteroidExplosion,
 	updateShipPosition,
 	updateShipVelocity,
 	updateAsteroids,
@@ -112,13 +112,13 @@ function update() {
 	updateShipParticles(particles);
 	const hits = updateBullets(bullets, SIZE, asteroids);
 	for (const hit of hits) {
-		const explosionScale = hit.asteroid.size;
-		spawnExplosion(hit.x, hit.y, particles, explosionScale);
+		const size = hit.asteroid.size;
+		spawnAsteroidExplosion(hit.x, hit.y, particles, size);
 
-		if (hit.asteroid.size > 1) {
-			splitAsteroid(asteroids, hit.asteroid, hit.asteroid.size - 1);
+		if (size > 1) {
+			splitAsteroid(asteroids, hit.asteroid, size - 1);
 		}
-		addScore(POINTS_BY_SIZE[hit.asteroid.size]);
+		addScore(POINTS_BY_SIZE[size]);
 	}
 	updateAsteroids(asteroids);
 }

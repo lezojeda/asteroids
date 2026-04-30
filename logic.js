@@ -1,5 +1,6 @@
 import { decreaseLives, lives, setGameOver, setLives, SIZE } from "./state";
 import { BULLET_SPEED, ASTEROID_RADIUS_SCALE, ASTEROID_SPEED } from "./constants";
+import { playLaserSound, playExplosionSound } from "./sound.js";
 
 /** State loop updates */
 
@@ -112,18 +113,18 @@ export function updateAsteroids(asteroids) {
 }
 
 /** Entities spawn */
-const bulletSound = new Audio("/sounds/laser1.wav");
 export function spawnBullet(ship, bullets) {
 	const noseX = ship.x + Math.cos(ship.angle) * ship.size;
 	const noseY = ship.y + Math.sin(ship.angle) * ship.size;
+
 	bullets.push({
 		x: noseX,
 		y: noseY,
 		vx: Math.cos(ship.angle) * BULLET_SPEED + ship.vx,
 		vy: Math.sin(ship.angle) * BULLET_SPEED + ship.vy,
 	});
-	bulletSound.currentTime = 0; // rewind so it can replay quickly
-	bulletSound.play();
+
+	playLaserSound();
 }
 
 export function spawnFlame(ship, particles) {
@@ -141,26 +142,28 @@ export function spawnFlame(ship, particles) {
 	});
 }
 
-export function spawnExplosion(x, y, particles, scale = 1.0) {
-	const count = Math.floor(8 + Math.random() * 6 * scale); // 8–13 base, scaled up/down
+export function spawnAsteroidExplosion(x, y, particles, asteroidSize = 1) {
+    const scale = asteroidSize;
+    const baseSize = 2.2 + scale * 2.1;
+    const baseDecay = 0.022 + 0.018 / scale;
+	
+    const count = Math.floor(8 + Math.random() * 6 * scale);
+    for (let i = 0; i < count; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const speed = (1.1 + Math.random() * 2.3) * (0.9 + scale * 0.5);
 
-	const baseSize = 2.2 + scale * 2.1;
-	const baseDecay = 0.022 + 0.018 / scale; // more delay for bigger entities
+        particles.push({
+            x,
+            y,
+            vx: Math.cos(angle) * speed,
+            vy: Math.sin(angle) * speed,
+            life: 1.0,
+            decay: baseDecay + Math.random() * 0.012,
+            size: baseSize * (0.65 + Math.random() * 0.85),
+        });
+    }
 
-	for (let i = 0; i < count; i++) {
-		const angle = Math.random() * Math.PI * 2;
-		const speed = (1.1 + Math.random() * 2.3) * (0.9 + scale * 0.5);
-
-		particles.push({
-			x,
-			y,
-			vx: Math.cos(angle) * speed,
-			vy: Math.sin(angle) * speed,
-			life: 1.0,
-			decay: baseDecay + Math.random() * 0.012,
-			size: baseSize * (0.65 + Math.random() * 0.85),
-		});
-	}
+    playExplosionSound(asteroidSize);
 }
 
 export function spawnAsteroids(asteroids, wave) {
