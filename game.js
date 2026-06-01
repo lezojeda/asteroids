@@ -128,7 +128,7 @@ function update() {
 
 	// Saucers
 	if (saucers.length === 0 && !gameOver && !paused) {
-		spawnSaucer(saucers);
+		spawnSaucer(saucers, score);
 	}
 	if (saucers.length > 0) {
 		updateSaucers(saucers);
