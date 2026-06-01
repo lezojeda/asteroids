@@ -58,7 +58,7 @@ import {
 } from "./state.js";
 import { POINTS_BY_SIZE, SHOOT_COOLDOWN, SAUCER_POINTS } from "./constants.js";
 import { isLeft, isRight, isThrust, isShoot } from "./input.js";
-import { muteAll, unmuteAll } from "./sound.js";
+import { muteAll, unmuteAll, playThrustSound, stopThrustSound } from "./sound.js";
 
 const canvas = document.getElementById("c");
 const ctx = canvas.getContext("2d");
@@ -128,6 +128,9 @@ function update() {
 		updateShipVelocity(ship);
 		spawnFlame(ship, particles);
 		spawnFlame(ship, particles);
+		playThrustSound();
+	} else {
+		stopThrustSound();
 	}
 
 	updateShipPosition(ship, asteroids);

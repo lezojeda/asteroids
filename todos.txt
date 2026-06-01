@@ -1,6 +1,5 @@
 - sound
 	- ship destruction
-	- button to mute
 - high scores and persist list
 - difficulty level
 - allow player to customize colors/themes

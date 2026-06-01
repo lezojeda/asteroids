@@ -1,5 +1,8 @@
 const laserSound = new Audio("./sounds/laser1.wav");
 const explosionSound = new Audio("./sounds/asteroid_explosion.mp3");
+const shipExplosion = new Audio("./sounds/ship_explosion.wav");
+const thrustSound = new Audio("./sounds/thrusters.mp3");
+thrustSound.loop = true;
 
 laserSound.preload = "auto";
 explosionSound.preload = "auto";
@@ -66,12 +69,25 @@ export function playExplosionSound(size = 1) {
 	}, EXPLOSION_TIMEOUT);
 }
 
-// Future extensions:
 export function playThrustSound() {
-	/* ... */
+	if (muted) return;
+
+	if (thrustSound.paused && !muted) thrustSound.play().catch(() => {});
 }
+
+export function stopThrustSound() {
+	if (muted) return;
+
+	if (!thrustSound.paused) thrustSound.pause();
+}
+
 export function playShipExplosionSound() {
-	/* ... */
+	if (muted) return;
+
+	shipExplosion.currentTime = 0;
+	shipExplosion.volume = 0.65;
+	shipExplosion.playbackRate = 0.7 + (Math.random() - 0.5) * 0.1;
+	shipExplosion.play().catch(() => {});
 }
 
 export function muteAll() {

@@ -6,7 +6,7 @@ import {
 	SMALL_SAUCER_SCORE_THRESHOLD,
 	INVULNERABILITY_TIME,
 } from "./constants.js";
-import { playLaserSound, playExplosionSound } from "./sound.js";
+import { playLaserSound, playExplosionSound, playShipExplosionSound } from "./sound.js";
 
 /** State loop updates */
 
@@ -26,6 +26,7 @@ export function updateShipPosition(ship, asteroids) {
 	}
 
 	if (ship.invulnerable === 0) {
+		// Check for asteroid hit
 		for (let j = asteroids.length - 1; j >= 0; j--) {
 			const asteroid = asteroids[j];
 			const dx = ship.x - asteroid.x;
@@ -34,24 +35,9 @@ export function updateShipPosition(ship, asteroids) {
 			const shipRadius = ship.size * 0.8;
 
 			if (dx * dx + dy * dy < (asteroid.radius + shipRadius) ** 2) {
-				decreaseLives();
-
-				if (lives <= 0) {
-					setGameOver(true);
-				} else {
-					// Respawn ship in center
-					ship.x = SIZE / 2;
-					ship.y = SIZE / 2;
-					ship.vx = 0;
-					ship.vy = 0;
-					ship.angle = -Math.PI / 2;
-
-					ship.invulnerable = INVULNERABILITY_TIME;
-				}
-
+				handleShipHit(ship);
 				splitAsteroid(asteroids, asteroids[j], asteroids[j].size - 1);
 				asteroids.splice(j, 1);
-
 				break;
 			}
 		}
@@ -349,6 +335,7 @@ function spawnSaucerBullet(saucer, saucerBullets, shipX, shipY) {
 
 /** Bullet hits */
 export function handleShipHit(ship) {
+	playShipExplosionSound();
 	decreaseLives();
 	if (lives <= 0) {
 		setGameOver(true);
