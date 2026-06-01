@@ -47,7 +47,7 @@ import {
 	setLives,
 	clearSaucers,
 } from "./state.js";
-import { POINTS_BY_SIZE, SHOOT_COOLDOWN } from "./constants.js";
+import { POINTS_BY_SIZE, SHOOT_COOLDOWN, SAUCER_POINTS } from "./constants.js";
 import { isLeft, isRight, isThrust, isShoot } from "./input.js";
 
 const canvas = document.getElementById("c");
@@ -112,15 +112,17 @@ function update() {
 	updateShipParticles(particles);
 
 	// Bullets
-	const hits = updateBullets(bullets, SIZE, asteroids);
+	const hits = updateBullets(bullets, SIZE, asteroids, saucers);
 	for (const hit of hits) {
-		const size = hit.asteroid.size;
-		spawnAsteroidExplosion(hit.x, hit.y, particles, size);
-
-		if (size > 1) {
-			splitAsteroid(asteroids, hit.asteroid, size - 1);
+		if (hit.type === "asteroid") {
+			const size = hit.asteroid.size;
+			spawnAsteroidExplosion(hit.x, hit.y, particles, size);
+			if (size > 1) splitAsteroid(asteroids, hit.asteroid, size - 1);
+			addScore(POINTS_BY_SIZE[size]);
+		} else if (hit.type === "saucer") {
+			spawnAsteroidExplosion(hit.x, hit.y, particles, 2);
+			addScore(SAUCER_POINTS[hit.saucer.type]);
 		}
-		addScore(POINTS_BY_SIZE[size]);
 	}
 
 	// Asteroids

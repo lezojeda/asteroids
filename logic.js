@@ -64,29 +64,49 @@ export function updateShipPosition(ship, asteroids) {
 	if (ship.y > SIZE) ship.y -= SIZE;
 }
 
-export function updateBullets(bullets, size, asteroids = []) {
+export function updateBullets(bullets, size, asteroids = [], saucers = []) {
 	const hits = [];
 	for (let i = bullets.length - 1; i >= 0; i--) {
 		const b = bullets[i];
 		b.x += b.vx;
 		b.y += b.vy;
 
+		/** Has it reached the end of the screen? */
 		const outOfBounds = b.x < 0 || b.x > size || b.y < 0 || b.y > size;
 		if (outOfBounds) {
 			bullets.splice(i, 1);
-		} else {
-			// check if bullet collides with any one of the asteroids
-			for (let j = asteroids.length - 1; j >= 0; j--) {
-				const asteroid = asteroids[j];
-				const dx = b.x - asteroid.x;
-				const dy = b.y - asteroid.y;
+			continue;
+		}
 
-				if (dx * dx + dy * dy < asteroid.radius * asteroid.radius) {
-					bullets.splice(i, 1);
-					asteroids.splice(j, 1);
-					hits.push({ x: asteroid.x, y: asteroid.y, asteroid });
-					break;
-				}
+		let hit = false;
+
+		/** Has it hit any asteroid? */
+		for (let j = asteroids.length - 1; j >= 0; j--) {
+			const asteroid = asteroids[j];
+			const dx = b.x - asteroid.x;
+			const dy = b.y - asteroid.y;
+			if (dx * dx + dy * dy < asteroid.radius * asteroid.radius) {
+				bullets.splice(i, 1);
+				asteroids.splice(j, 1);
+				hits.push({ type: "asteroid", x: asteroid.x, y: asteroid.y, asteroid });
+				hit = true;
+				break;
+			}
+		}
+
+		if (hit) continue;
+
+		/** Has it hit any saucer? */
+		for (let j = saucers.length - 1; j >= 0; j--) {
+			const saucer = saucers[j];
+			const dx = b.x - saucer.x;
+			const dy = b.y - saucer.y;
+			if (dx * dx + dy * dy < saucer.radius * saucer.radius) {
+				bullets.splice(i, 1);
+				saucers.splice(j, 1);
+				hits.push({ type: "saucer", x: saucer.x, y: saucer.y, saucer });
+				hit = true;
+				break;
 			}
 		}
 	}
@@ -270,12 +290,11 @@ export function getRandomAsteroidVertexOffsets(sides) {
 }
 
 export function spawnSaucer(saucers, playerScore) {
-	console.log(playerScore);
 	const small = shouldSpawnSmallSaucer(playerScore);
 
 	const type = small ? "small" : "big";
 	const spawnFromLeft = Math.random() < 0.5;
-	console.log("small?: ", small);
+
 	saucers.push({
 		x: spawnFromLeft ? -25 : SIZE + 25,
 		y: 60 + Math.random() * (SIZE - 120),

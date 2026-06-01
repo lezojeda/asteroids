@@ -1,6 +1,5 @@
 - saucers like in the classic Asteroids
 	- shooting
-	- type: big and small
 	- bullets
 	- collision with asteroids and player 
 	- points on killing saucers

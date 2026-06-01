@@ -13,4 +13,4 @@ export const ASTEROID_SPEED = 3;
 
 /** Saucers */
 export const SAUCER_POINTS = { big: 200, small: 1000 };
-export const SMALL_SAUCER_SCORE_THRESHOLD = 15000;
+export const SMALL_SAUCER_SCORE_THRESHOLD = 30000;
