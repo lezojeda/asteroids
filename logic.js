@@ -4,6 +4,7 @@ import {
 	ASTEROID_RADIUS_SCALE,
 	ASTEROID_SPEED,
 	SMALL_SAUCER_SCORE_THRESHOLD,
+	INVULNERABILITY_TIME,
 } from "./constants.js";
 import { playLaserSound, playExplosionSound } from "./sound.js";
 
@@ -45,8 +46,7 @@ export function updateShipPosition(ship, asteroids) {
 					ship.vy = 0;
 					ship.angle = -Math.PI / 2;
 
-					// Give 2 seconds of invulnerability (~120 frames at 60fps)
-					ship.invulnerable = 120;
+					ship.invulnerable = INVULNERABILITY_TIME;
 				}
 
 				splitAsteroid(asteroids, asteroids[j], asteroids[j].size - 1);
@@ -358,7 +358,7 @@ export function handleShipHit(ship) {
 		ship.vx = 0;
 		ship.vy = 0;
 		ship.angle = -Math.PI / 2;
-		ship.invulnerable = 120;
+		ship.invulnerable = INVULNERABILITY_TIME;
 	}
 }
 
@@ -384,6 +384,20 @@ export function checkSaucerBulletsHitShip(saucerBullets, ship) {
 		const dy = b.y - ship.y;
 		if (dx * dx + dy * dy < (ship.size * 0.8) ** 2) {
 			saucerBullets.splice(i, 1);
+			handleShipHit(ship);
+			break;
+		}
+	}
+}
+
+export function checkSaucersHitShip(saucers, ship) {
+	if (ship.invulnerable > 0) return;
+	for (let i = saucers.length - 1; i >= 0; i--) {
+		const s = saucers[i];
+		const dx = s.x - ship.x;
+		const dy = s.y - ship.y;
+		if (dx * dx + dy * dy < (s.radius + ship.size * 0.8) ** 2) {
+			saucers.splice(i, 1);
 			handleShipHit(ship);
 			break;
 		}

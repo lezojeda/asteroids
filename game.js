@@ -15,6 +15,7 @@ import {
 	handleBulletHits,
 	checkSaucerBulletsHitShip,
 	updateSaucerBullets,
+	checkSaucersHitShip
 } from "./logic.js";
 import {
 	drawAsteroids,
@@ -151,6 +152,7 @@ function update() {
 		}
 	} else {
 		updateSaucers(saucers, saucerBullets, ship.x, ship.y);
+		checkSaucersHitShip(saucers, ship);
 	}
 
 	if (asteroids.length === 0) {

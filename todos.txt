@@ -1,6 +1,4 @@
 - saucers like in the classic Asteroids
-	- shooting
-	- bullets
 	- collision with asteroids and player 
 - sound
 	- ship destruction
