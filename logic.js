@@ -164,7 +164,7 @@ export function updateSaucers(saucers, saucerBullets, shipX, shipY) {
 		s.shootTimer--;
 		if (s.shootTimer <= 0) {
 			spawnSaucerBullet(s, saucerBullets, shipX, shipY);
-			s.shootTimer = 60 + Math.floor(Math.random() * 60);
+			s.shootTimer = 120 + Math.floor(Math.random() * 60);
 		}
 	}
 }

@@ -52,6 +52,8 @@ import {
 	setLives,
 	clearSaucers,
 	saucerBullets,
+	saucerSpawnTimer,
+	setSaucerSpawnTimer,
 } from "./state.js";
 import { POINTS_BY_SIZE, SHOOT_COOLDOWN, SAUCER_POINTS } from "./constants.js";
 import { isLeft, isRight, isThrust, isShoot } from "./input.js";
@@ -81,6 +83,7 @@ function resetGame() {
 	setWave(0);
 	setLives(3);
 	clearSaucers();
+	setSaucerSpawnTimer(0);
 }
 
 window.addEventListener("keydown", e => {
@@ -140,9 +143,13 @@ function update() {
 
 	// Saucers
 	if (saucers.length === 0 && !gameOver && !paused) {
-		spawnSaucer(saucers, score);
-	}
-	if (saucers.length > 0) {
+		if (saucerSpawnTimer <= 0) {
+			spawnSaucer(saucers, score);
+			setSaucerSpawnTimer(400 + Math.floor(Math.random() * 400));
+		} else {
+			setSaucerSpawnTimer(saucerSpawnTimer - 1);
+		}
+	} else {
 		updateSaucers(saucers, saucerBullets, ship.x, ship.y);
 	}
 
