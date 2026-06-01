@@ -151,7 +151,7 @@ function update() {
 	}
 
 	// Saucer bullets
-	updateSaucerBullets(saucerBullets, SIZE);
+	updateSaucerBullets(saucerBullets, SIZE, asteroids);
 	checkSaucerBulletsHitShip(saucerBullets, ship);
 
 	// Asteroids

@@ -62,46 +62,23 @@ function moveBullets(bullets, size) {
 	}
 }
 
-export function updateSaucerBullets(bullets, size) {
+export function updateSaucerBullets(bullets, size, asteroids) {
 	moveBullets(bullets, size);
+	checkBulletsVsCircles(bullets, asteroids, () => {});
 }
 
 export function updateShipBullets(bullets, size, asteroids = [], saucers = []) {
 	moveBullets(bullets, size);
 	const hits = [];
-	for (let i = bullets.length - 1; i >= 0; i--) {
-		const b = bullets[i];
-		let hit = false;
-		/** Has it hit any asteroid? */
-		for (let j = asteroids.length - 1; j >= 0; j--) {
-			const asteroid = asteroids[j];
-			const dx = b.x - asteroid.x;
-			const dy = b.y - asteroid.y;
-			if (dx * dx + dy * dy < asteroid.radius * asteroid.radius) {
-				bullets.splice(i, 1);
-				asteroids.splice(j, 1);
-				hits.push({ type: "asteroid", x: asteroid.x, y: asteroid.y, asteroid });
-				hit = true;
-				break;
-			}
-		}
-		if (hit) continue;
-		/** Has it hit any saucer? */
-		for (let j = saucers.length - 1; j >= 0; j--) {
-			const saucer = saucers[j];
-			const dx = b.x - saucer.x;
-			const dy = b.y - saucer.y;
-			if (dx * dx + dy * dy < saucer.radius * saucer.radius) {
-				bullets.splice(i, 1);
-				saucers.splice(j, 1);
-				hits.push({ type: "saucer", x: saucer.x, y: saucer.y, saucer });
-				hit = true;
-				break;
-			}
-		}
-	}
+	checkBulletsVsCircles(bullets, asteroids, t => {
+		hits.push({ type: "asteroid", x: t.x, y: t.y, asteroid: t });
+	});
+	checkBulletsVsCircles(bullets, saucers, t => {
+		hits.push({ type: "saucer", x: t.x, y: t.y, saucer: t });
+	});
 	return hits;
 }
+
 export function updateShipParticles(particles) {
 	for (let i = particles.length - 1; i >= 0; i--) {
 		const p = particles[i];
@@ -387,6 +364,24 @@ export function checkSaucersHitShip(saucers, ship) {
 			saucers.splice(i, 1);
 			handleShipHit(ship);
 			break;
+		}
+	}
+}
+
+/** Utility to use in both saucer and ship bullets <-> asteroids checks */
+function checkBulletsVsCircles(bullets, targets, onHit) {
+	for (let i = bullets.length - 1; i >= 0; i--) {
+		const b = bullets[i];
+		for (let j = targets.length - 1; j >= 0; j--) {
+			const t = targets[j];
+			const dx = b.x - t.x;
+			const dy = b.y - t.y;
+			if (dx * dx + dy * dy < t.radius * t.radius) {
+				bullets.splice(i, 1);
+				targets.splice(j, 1);
+				onHit(t);
+				break;
+			}
 		}
 	}
 }
