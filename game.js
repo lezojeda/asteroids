@@ -11,7 +11,7 @@ import {
 	spawnAsteroids,
 	splitAsteroid,
 	spawnSaucer,
-} from "./logic";
+} from "./logic.js";
 import {
 	drawAsteroids,
 	drawBullets,
@@ -23,7 +23,7 @@ import {
 	drawLives,
 	drawWave,
 	drawSaucers,
-} from "./render";
+} from "./render.js";
 import {
 	SIZE,
 	ship,
@@ -46,9 +46,9 @@ import {
 	lives,
 	setLives,
 	clearSaucers,
-} from "./state";
-import { POINTS_BY_SIZE, SHOOT_COOLDOWN } from "./constants";
-import { isLeft, isRight, isThrust, isShoot } from "./input";
+} from "./state.js";
+import { POINTS_BY_SIZE, SHOOT_COOLDOWN } from "./constants.js";
+import { isLeft, isRight, isThrust, isShoot } from "./input.js";
 
 const canvas = document.getElementById("c");
 const ctx = canvas.getContext("2d");

@@ -1,4 +1,4 @@
-import { SHIP_ROT_SPEED, SHIP_THRUST, SHIP_DRAG, SHIP_SIZE } from "./constants";
+import { SHIP_ROT_SPEED, SHIP_THRUST, SHIP_DRAG, SHIP_SIZE } from "./constants.js";
 
 export const SIZE = Math.min(window.innerWidth - 32, window.innerHeight - 60, 800);
 

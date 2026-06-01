@@ -1,5 +1,5 @@
-import { decreaseLives, lives, setGameOver, setLives, SIZE } from "./state";
-import { BULLET_SPEED, ASTEROID_RADIUS_SCALE, ASTEROID_SPEED } from "./constants";
+import { decreaseLives, lives, setGameOver, SIZE } from "./state.js";
+import { BULLET_SPEED, ASTEROID_RADIUS_SCALE, ASTEROID_SPEED } from "./constants.js";
 import { playLaserSound, playExplosionSound } from "./sound.js";
 
 /** State loop updates */

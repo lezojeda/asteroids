@@ -1,5 +1,5 @@
-const laserSound = new Audio("/sounds/laser1.wav");
-const explosionSound = new Audio("/sounds/asteroid_explosion.mp3");
+const laserSound = new Audio("./sounds/laser1.wav");
+const explosionSound = new Audio("./sounds/asteroid_explosion.mp3");
 
 laserSound.preload = "auto";
 explosionSound.preload = "auto";
