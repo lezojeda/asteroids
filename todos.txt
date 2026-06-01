@@ -2,7 +2,6 @@
 	- shooting
 	- bullets
 	- collision with asteroids and player 
-	- points on killing saucers
 - sound
 	- ship destruction
 	- button to mute

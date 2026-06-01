@@ -2,6 +2,7 @@ import { SHIP_ROT_SPEED, SHIP_THRUST, SHIP_DRAG, SHIP_SIZE } from "./constants.j
 
 export const SIZE = Math.min(window.innerWidth - 32, window.innerHeight - 60, 800);
 
+/** Ship */
 export const ship = {
 	x: SIZE / 2,
 	y: SIZE / 2,
@@ -15,20 +16,24 @@ export const ship = {
 	invulnerable: 0,
 };
 
-export const saucers = [];
-
-export function clearSaucers() {
-    saucers.length = 0;
-}
-
-export const bullets = [];
-export const particles = [];
-export const asteroids = [];
-
 export let lastShotTime = 0;
 export function setLastShotTime(t) {
 	lastShotTime = t;
 }
+
+/** Saucers */
+export const saucers = [];
+export const saucerBullets = [];
+export function clearSaucers() {
+    saucers.length = 0;
+}
+
+/** Bullets, particles, asteroids */
+export const bullets = [];
+export const particles = [];
+export const asteroids = [];
+
+/** Game interaction */
 
 export let gameOver = false;
 export function setGameOver(value) {

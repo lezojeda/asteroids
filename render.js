@@ -156,29 +156,43 @@ export function drawWave(ctx, wave) {
 
 // ── Draw Saucers ──────────────────────────────────────────────
 function drawTrapezoid(ctx, y, topW, bottomW, h, scale) {
-    ctx.beginPath();
-    ctx.moveTo(-topW / 2 * scale, y * scale);
-    ctx.lineTo(topW / 2 * scale, y * scale);
-    ctx.lineTo(bottomW / 2 * scale, (y + h) * scale);
-    ctx.lineTo(-bottomW / 2 * scale, (y + h) * scale);
-    ctx.closePath();
-    ctx.stroke();
+	ctx.beginPath();
+	ctx.moveTo((-topW / 2) * scale, y * scale);
+	ctx.lineTo((topW / 2) * scale, y * scale);
+	ctx.lineTo((bottomW / 2) * scale, (y + h) * scale);
+	ctx.lineTo((-bottomW / 2) * scale, (y + h) * scale);
+	ctx.closePath();
+	ctx.stroke();
 }
 
 export function drawSaucers(ctx, saucers) {
-    for (const saucer of saucers) {
-        ctx.save();
-        ctx.translate(saucer.x, saucer.y);
+	for (const saucer of saucers) {
+		ctx.save();
+		ctx.translate(saucer.x, saucer.y);
 
-        const scale = saucer.radius / 18;
-        ctx.lineWidth = 2;
-        ctx.lineJoin = "round";
-        ctx.strokeStyle = "rgb(180, 180, 180)";
+		const scale = saucer.radius / 18;
+		ctx.lineWidth = 2;
+		ctx.lineJoin = "round";
+		ctx.strokeStyle = "rgb(180, 180, 180)";
 
-        drawTrapezoid(ctx, -16, 6, 12, 6, scale);
-        drawTrapezoid(ctx, -10, 12, 28, 6, scale);
-        drawTrapezoid(ctx, -4, 28, 12, 6, scale);
+		drawTrapezoid(ctx, -16, 6, 12, 6, scale);
+		drawTrapezoid(ctx, -10, 12, 28, 6, scale);
+		drawTrapezoid(ctx, -4, 28, 12, 6, scale);
 
-        ctx.restore();
-    }
+		ctx.restore();
+	}
+}
+
+export function drawSaucerBullets(ctx, bullets) {
+	for (const b of bullets) {
+		ctx.beginPath();
+		ctx.arc(b.x, b.y, 5, 0, Math.PI * 2);
+		ctx.fillStyle = "rgba(60, 255, 60, 0.2)";
+		ctx.fill();
+
+		ctx.beginPath();
+		ctx.arc(b.x, b.y, 2, 0, Math.PI * 2);
+		ctx.fillStyle = "#4f4";
+		ctx.fill();
+	}
 }

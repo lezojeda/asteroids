@@ -64,22 +64,28 @@ export function updateShipPosition(ship, asteroids) {
 	if (ship.y > SIZE) ship.y -= SIZE;
 }
 
-export function updateBullets(bullets, size, asteroids = [], saucers = []) {
-	const hits = [];
+function moveBullets(bullets, size) {
 	for (let i = bullets.length - 1; i >= 0; i--) {
 		const b = bullets[i];
 		b.x += b.vx;
 		b.y += b.vy;
-
-		/** Has it reached the end of the screen? */
-		const outOfBounds = b.x < 0 || b.x > size || b.y < 0 || b.y > size;
-		if (outOfBounds) {
+		// Check if bullet has gone out of the screen
+		if (b.x < 0 || b.x > size || b.y < 0 || b.y > size) {
 			bullets.splice(i, 1);
-			continue;
 		}
+	}
+}
 
+export function updateSaucerBullets(bullets, size) {
+	moveBullets(bullets, size);
+}
+
+export function updateBullets(bullets, size, asteroids = [], saucers = []) {
+	moveBullets(bullets, size);
+	const hits = [];
+	for (let i = bullets.length - 1; i >= 0; i--) {
+		const b = bullets[i];
 		let hit = false;
-
 		/** Has it hit any asteroid? */
 		for (let j = asteroids.length - 1; j >= 0; j--) {
 			const asteroid = asteroids[j];
@@ -93,9 +99,7 @@ export function updateBullets(bullets, size, asteroids = [], saucers = []) {
 				break;
 			}
 		}
-
 		if (hit) continue;
-
 		/** Has it hit any saucer? */
 		for (let j = saucers.length - 1; j >= 0; j--) {
 			const saucer = saucers[j];
@@ -112,7 +116,6 @@ export function updateBullets(bullets, size, asteroids = [], saucers = []) {
 	}
 	return hits;
 }
-
 export function updateShipParticles(particles) {
 	for (let i = particles.length - 1; i >= 0; i--) {
 		const p = particles[i];
@@ -137,10 +140,11 @@ export function updateAsteroids(asteroids) {
 	}
 }
 
-export function updateSaucers(saucers) {
+export function updateSaucers(saucers, saucerBullets, shipX, shipY) {
 	for (let i = saucers.length - 1; i >= 0; i--) {
 		const s = saucers[i];
 
+		/** Movement */
 		s.x += s.vx;
 		s.y += s.vy;
 
@@ -155,6 +159,13 @@ export function updateSaucers(saucers) {
 		// keep vertical bounds
 		if (s.y < 30) s.vy = Math.abs(s.vy) * 0.8;
 		if (s.y > SIZE - 30) s.vy = -Math.abs(s.vy) * 0.8;
+
+		/** Update shooting timer and spawn bullet if reaches zero */
+		s.shootTimer--;
+		if (s.shootTimer <= 0) {
+			spawnSaucerBullet(s, saucerBullets, shipX, shipY);
+			s.shootTimer = 60 + Math.floor(Math.random() * 60);
+		}
 	}
 }
 
@@ -289,6 +300,7 @@ export function getRandomAsteroidVertexOffsets(sides) {
 	return Array.from({ length: sides }, () => (Math.random() - 0.5) * 0.4);
 }
 
+/** Saucers */
 export function spawnSaucer(saucers, playerScore) {
 	const small = shouldSpawnSmallSaucer(playerScore);
 
@@ -315,4 +327,65 @@ function shouldSpawnSmallSaucer(score) {
 	const spawnChance = score / SMALL_SAUCER_SCORE_THRESHOLD;
 
 	return Math.random() < spawnChance;
+}
+
+function spawnSaucerBullet(saucer, saucerBullets, shipX, shipY) {
+	let angle;
+	if (saucer.type === "big") {
+		angle = Math.random() * Math.PI * 2;
+	} else {
+		const baseAngle = Math.atan2(shipY - saucer.y, shipX - saucer.x);
+		const spread = (Math.random() - 0.5) * (Math.PI / 4); // ±22.5°
+		angle = baseAngle + spread;
+	}
+
+	saucerBullets.push({
+		x: saucer.x,
+		y: saucer.y,
+		vx: Math.cos(angle) * BULLET_SPEED,
+		vy: Math.sin(angle) * BULLET_SPEED,
+	});
+}
+
+/** Bullet hits */
+export function handleShipHit(ship) {
+	decreaseLives();
+	if (lives <= 0) {
+		setGameOver(true);
+	} else {
+		ship.x = SIZE / 2;
+		ship.y = SIZE / 2;
+		ship.vx = 0;
+		ship.vy = 0;
+		ship.angle = -Math.PI / 2;
+		ship.invulnerable = 120;
+	}
+}
+
+export function handleBulletHits(hits, asteroids, particles) {
+	for (const hit of hits) {
+		if (hit.type === "asteroid") {
+			const size = hit.asteroid.size;
+			spawnAsteroidExplosion(hit.x, hit.y, particles, size);
+			if (size > 1) splitAsteroid(asteroids, hit.asteroid, size - 1);
+			addScore(POINTS_BY_SIZE[size]);
+		} else if (hit.type === "saucer") {
+			spawnAsteroidExplosion(hit.x, hit.y, particles, 2);
+			addScore(SAUCER_POINTS[hit.saucer.type]);
+		}
+	}
+}
+
+export function checkSaucerBulletsHitShip(saucerBullets, ship) {
+	if (ship.invulnerable > 0) return;
+	for (let i = saucerBullets.length - 1; i >= 0; i--) {
+		const b = saucerBullets[i];
+		const dx = b.x - ship.x;
+		const dy = b.y - ship.y;
+		if (dx * dx + dy * dy < (ship.size * 0.8) ** 2) {
+			saucerBullets.splice(i, 1);
+			handleShipHit(ship);
+			break;
+		}
+	}
 }

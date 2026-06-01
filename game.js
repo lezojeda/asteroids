@@ -11,6 +11,10 @@ import {
 	spawnAsteroids,
 	splitAsteroid,
 	spawnSaucer,
+	handleShipHit,
+	handleBulletHits,
+	checkSaucerBulletsHitShip,
+	updateSaucerBullets,
 } from "./logic.js";
 import {
 	drawAsteroids,
@@ -23,6 +27,7 @@ import {
 	drawLives,
 	drawWave,
 	drawSaucers,
+	drawSaucerBullets,
 } from "./render.js";
 import {
 	SIZE,
@@ -46,6 +51,7 @@ import {
 	lives,
 	setLives,
 	clearSaucers,
+	saucerBullets,
 } from "./state.js";
 import { POINTS_BY_SIZE, SHOOT_COOLDOWN, SAUCER_POINTS } from "./constants.js";
 import { isLeft, isRight, isThrust, isShoot } from "./input.js";
@@ -125,6 +131,10 @@ function update() {
 		}
 	}
 
+	// Saucer bullets
+	updateSaucerBullets(saucerBullets, SIZE);
+	checkSaucerBulletsHitShip(saucerBullets, ship);
+
 	// Asteroids
 	updateAsteroids(asteroids);
 
@@ -133,7 +143,7 @@ function update() {
 		spawnSaucer(saucers, score);
 	}
 	if (saucers.length > 0) {
-		updateSaucers(saucers);
+		updateSaucers(saucers, saucerBullets, ship.x, ship.y);
 	}
 
 	if (asteroids.length === 0) {
@@ -158,6 +168,7 @@ function draw() {
 		drawLives(ctx, lives);
 		drawWave(ctx, wave);
 		drawSaucers(ctx, saucers);
+		drawSaucerBullets(ctx, saucerBullets);
 
 		if (paused) drawPaused(ctx, SIZE);
 	}
