@@ -1,5 +1,3 @@
-- saucers like in the classic Asteroids
-	- collision with asteroids and player 
 - sound
 	- ship destruction
 	- button to mute

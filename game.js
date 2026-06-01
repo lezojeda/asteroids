@@ -15,7 +15,7 @@ import {
 	handleBulletHits,
 	checkSaucerBulletsHitShip,
 	updateSaucerBullets,
-	checkSaucersHitShip
+	checkSaucersHitShip,
 } from "./logic.js";
 import {
 	drawAsteroids,
@@ -58,6 +58,7 @@ import {
 } from "./state.js";
 import { POINTS_BY_SIZE, SHOOT_COOLDOWN, SAUCER_POINTS } from "./constants.js";
 import { isLeft, isRight, isThrust, isShoot } from "./input.js";
+import { muteAll, unmuteAll } from "./sound.js";
 
 const canvas = document.getElementById("c");
 const ctx = canvas.getContext("2d");
@@ -101,6 +102,17 @@ window.addEventListener("click", e => {
 	if (!gameOver) return;
 	resetGame();
 	loop();
+});
+
+const muteBtn = document.getElementById("mute");
+muteBtn.addEventListener("click", () => {
+	if (muteBtn.textContent === "♪") {
+		muteAll();
+		muteBtn.textContent = "✕";
+	} else {
+		unmuteAll();
+		muteBtn.textContent = "♪";
+	}
 });
 
 // ── Update game state ─────────────────────────────────────────

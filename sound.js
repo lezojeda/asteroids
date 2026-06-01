@@ -4,8 +4,10 @@ const explosionSound = new Audio("./sounds/asteroid_explosion.mp3");
 laserSound.preload = "auto";
 explosionSound.preload = "auto";
 
+let muted = false;
+
 export function playLaserSound() {
-	if (!laserSound) return;
+	if (!laserSound || muted) return;
 
 	laserSound.currentTime = 0;
 	laserSound.volume = 0.65;
@@ -17,6 +19,8 @@ let activeExplosions = 0;
 const MAX_SIMULTANEOUS_EXPLOSIONS = 3;
 const EXPLOSION_TIMEOUT = 300;
 export function playExplosionSound(size = 1) {
+	if (muted) return;
+
 	if (!explosionSound) {
 		console.error("Missing asteroid explosion file");
 		return;
@@ -71,11 +75,8 @@ export function playShipExplosionSound() {
 }
 
 export function muteAll() {
-	laserSound.volume = 0;
-	explosionSound.volume = 0;
+	muted = true;
 }
-
 export function unmuteAll() {
-	laserSound.volume = 0.9;
-	explosionSound.volume = 1.0;
+	muted = false;
 }
