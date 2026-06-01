@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import {
-	updateBullets,
+	updateShipBullets,
 	updateShipParticles,
 	spawnBullet,
 	spawnFlame,
@@ -9,43 +9,43 @@ import {
 	getInitialAsteroidVelocities,
 } from "./logic.js";
 
-// ── updateBullets ─────────────────────────────────────────────
+// ── updateShipBullets ─────────────────────────────────────────────
 
-describe("updateBullets", () => {
+describe("updateShipBullets", () => {
 	it("moves bullet by its velocity", () => {
 		const bullets = [{ x: 100, y: 100, vx: 5, vy: 3 }];
-		updateBullets(bullets, 600);
+		updateShipBullets(bullets, 600);
 		expect(bullets[0].x).toBe(105);
 		expect(bullets[0].y).toBe(103);
 	});
 
 	it("removes bullet when x < 0", () => {
 		const bullets = [{ x: 1, y: 300, vx: -5, vy: 0 }];
-		updateBullets(bullets, 600);
+		updateShipBullets(bullets, 600);
 		expect(bullets).toHaveLength(0);
 	});
 
 	it("removes bullet when x > size", () => {
 		const bullets = [{ x: 598, y: 300, vx: 5, vy: 0 }];
-		updateBullets(bullets, 600);
+		updateShipBullets(bullets, 600);
 		expect(bullets).toHaveLength(0);
 	});
 
 	it("removes bullet when y < 0", () => {
 		const bullets = [{ x: 300, y: 1, vx: 0, vy: -5 }];
-		updateBullets(bullets, 600);
+		updateShipBullets(bullets, 600);
 		expect(bullets).toHaveLength(0);
 	});
 
 	it("removes bullet when y > size", () => {
 		const bullets = [{ x: 300, y: 598, vx: 0, vy: 5 }];
-		updateBullets(bullets, 600);
+		updateShipBullets(bullets, 600);
 		expect(bullets).toHaveLength(0);
 	});
 
 	it("keeps bullet when still in bounds", () => {
 		const bullets = [{ x: 300, y: 300, vx: 1, vy: 1 }];
-		updateBullets(bullets, 600);
+		updateShipBullets(bullets, 600);
 		expect(bullets).toHaveLength(1);
 	});
 
@@ -55,7 +55,7 @@ describe("updateBullets", () => {
 			{ x: 598, y: 300, vx: 5, vy: 0 },
 			{ x: 200, y: 200, vx: -1, vy: 0 },
 		];
-		updateBullets(bullets, 600);
+		updateShipBullets(bullets, 600);
 		expect(bullets).toHaveLength(2);
 	});
 
@@ -73,7 +73,7 @@ describe("updateBullets", () => {
 			},
 		];
 		const bullets = [{ x: 100, y: 100, vx: 0, vy: 0 }];
-		updateBullets(bullets, 600, asteroids);
+		updateShipBullets(bullets, 600, asteroids);
 		expect(asteroids).toHaveLength(1);
 	});
 
@@ -91,7 +91,7 @@ describe("updateBullets", () => {
 			},
 		];
 		const bullets = [{ x: 100, y: 100, vx: 0, vy: 0 }];
-		updateBullets(bullets, 600, asteroids);
+		updateShipBullets(bullets, 600, asteroids);
 		expect(asteroids).toHaveLength(0);
 	});
 
@@ -109,7 +109,7 @@ describe("updateBullets", () => {
 			},
 		];
 		const bullets = [{ x: 100, y: 100, vx: 0, vy: 0 }];
-		updateBullets(bullets, 600, asteroids);
+		updateShipBullets(bullets, 600, asteroids);
 		expect(asteroids).toHaveLength(2);
 		expect(asteroids.every(a => a.size === 1)).toBe(true);
 	});
@@ -128,7 +128,7 @@ describe("updateBullets", () => {
 			},
 		];
 		const bullets = [{ x: 100, y: 100, vx: 0, vy: 0 }];
-		updateBullets(bullets, 600, asteroids);
+		updateShipBullets(bullets, 600, asteroids);
 		expect(asteroids).toHaveLength(2);
 		expect(asteroids.every(a => a.size === 2)).toBe(true);
 	});

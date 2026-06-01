@@ -1,5 +1,5 @@
 import {
-	updateBullets,
+	updateShipBullets,
 	updateShipParticles,
 	spawnBullet,
 	spawnFlame,
@@ -118,7 +118,7 @@ function update() {
 	updateShipParticles(particles);
 
 	// Bullets
-	const hits = updateBullets(bullets, SIZE, asteroids, saucers);
+	const hits = updateShipBullets(bullets, SIZE, asteroids, saucers);
 	for (const hit of hits) {
 		if (hit.type === "asteroid") {
 			const size = hit.asteroid.size;

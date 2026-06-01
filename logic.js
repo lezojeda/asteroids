@@ -80,7 +80,7 @@ export function updateSaucerBullets(bullets, size) {
 	moveBullets(bullets, size);
 }
 
-export function updateBullets(bullets, size, asteroids = [], saucers = []) {
+export function updateShipBullets(bullets, size, asteroids = [], saucers = []) {
 	moveBullets(bullets, size);
 	const hits = [];
 	for (let i = bullets.length - 1; i >= 0; i--) {
