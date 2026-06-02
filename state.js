@@ -23,9 +23,12 @@ export function setLastShotTime(t) {
 
 /** Saucers */
 export const saucers = [];
-export const saucerBullets = [];
 export function clearSaucers() {
 	saucers.length = 0;
+}
+export const saucerBullets = [];
+export function clearSaucerBullets() {
+	saucerBullets.length = 0;
 }
 export let saucerSpawnTimer = 0;
 export function setSaucerSpawnTimer(value) {

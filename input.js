@@ -1,8 +1,14 @@
 const keys = {};
 
+const GAME_KEYS = new Set([
+    "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown",
+    "KeyA", "KeyD", "KeyW", "KeyS",
+    "Space", "KeyP",
+]);
+
 window.addEventListener("keydown", e => {
     keys[e.code] = true;
-    e.preventDefault();
+    if (GAME_KEYS.has(e.code)) e.preventDefault();
 });
 
 window.addEventListener("keyup", e => {

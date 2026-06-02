@@ -54,8 +54,9 @@ import {
 	saucerBullets,
 	saucerSpawnTimer,
 	setSaucerSpawnTimer,
+	clearSaucerBullets,
 } from "./state.js";
-import { POINTS_BY_SIZE, SHOOT_COOLDOWN, SAUCER_POINTS } from "./constants.js";
+import { SHOOT_COOLDOWN } from "./constants.js";
 import { isLeft, isRight, isThrust, isShoot } from "./input.js";
 import { muteAll, unmuteAll, playThrustSound, stopThrustSound } from "./sound.js";
 
@@ -75,15 +76,18 @@ function resetGame() {
 	bullets.length = 0;
 	particles.length = 0;
 	asteroids.length = 0;
+	saucerBullets.length = 0;
 	ship.x = SIZE / 2;
 	ship.y = SIZE / 2;
 	ship.angle = -Math.PI / 2;
 	ship.vx = 0;
 	ship.vy = 0;
+	ship.invulnerable = 0;
 	setScore(0);
 	setWave(0);
 	setLives(3);
 	clearSaucers();
+	clearSaucerBullets();
 	setSaucerSpawnTimer(0);
 }
 
@@ -142,7 +146,7 @@ function update() {
 	// Saucer bullets
 	const saucerBulletHits = updateSaucerBullets(saucerBullets, SIZE, asteroids);
 	handleBulletHits(saucerBulletHits, asteroids, particles, false);
-	checkSaucerBulletsHitShip(saucerBullets, ship);
+	checkSaucerBulletsHitShip(saucerBullets, ship, particles);
 
 	// Asteroids
 	updateAsteroids(asteroids);

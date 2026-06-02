@@ -1,5 +1,5 @@
 - high scores and persist list
-- difficulty level
+- difficulty level -> high scores should depend on this
 - allow player to customize colors/themes
 	- add retro theme based on https://en.wikipedia.org/wiki/Asteroids_(video_game)
 - slightly randomize colors on session
