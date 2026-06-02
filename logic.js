@@ -321,7 +321,7 @@ function spawnSaucerBullet(saucer, saucerBullets, shipX, shipY) {
 		angle = Math.random() * Math.PI * 2;
 	} else {
 		const baseAngle = Math.atan2(shipY - saucer.y, shipX - saucer.x);
-		const spread = (Math.random() - 0.5) * (Math.PI / 4); // ±22.5°
+		const spread = (Math.random() - 0.5) * (Math.PI / 8); // ±22.5°
 		angle = baseAngle + spread;
 	}
 
