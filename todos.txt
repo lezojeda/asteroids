@@ -1,4 +1,3 @@
-- ship explosion visual effect
 - high scores and persist list
 - difficulty level
 - allow player to customize colors/themes

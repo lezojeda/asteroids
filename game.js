@@ -42,7 +42,6 @@ import {
 	gameOver,
 	setGameOver,
 	score,
-	addScore,
 	setScore,
 	paused,
 	togglePause,
@@ -133,25 +132,16 @@ function update() {
 		stopThrustSound();
 	}
 
-	updateShipPosition(ship, asteroids);
+	updateShipPosition(ship, asteroids, particles);
 	updateShipParticles(particles);
 
 	// Bullets
 	const hits = updateShipBullets(bullets, SIZE, asteroids, saucers);
-	for (const hit of hits) {
-		if (hit.type === "asteroid") {
-			const size = hit.asteroid.size;
-			spawnAsteroidExplosion(hit.x, hit.y, particles, size);
-			if (size > 1) splitAsteroid(asteroids, hit.asteroid, size - 1);
-			addScore(POINTS_BY_SIZE[size]);
-		} else if (hit.type === "saucer") {
-			spawnAsteroidExplosion(hit.x, hit.y, particles, 2);
-			addScore(SAUCER_POINTS[hit.saucer.type]);
-		}
-	}
+	handleBulletHits(hits, asteroids, particles);
 
 	// Saucer bullets
-	updateSaucerBullets(saucerBullets, SIZE, asteroids);
+	const saucerBulletHits = updateSaucerBullets(saucerBullets, SIZE, asteroids);
+	handleBulletHits(saucerBulletHits, asteroids, particles, false);
 	checkSaucerBulletsHitShip(saucerBullets, ship);
 
 	// Asteroids
@@ -167,7 +157,7 @@ function update() {
 		}
 	} else {
 		updateSaucers(saucers, saucerBullets, ship.x, ship.y);
-		checkSaucersHitShip(saucers, ship);
+		checkSaucersHitShip(saucers, ship, particles);
 	}
 
 	if (asteroids.length === 0) {

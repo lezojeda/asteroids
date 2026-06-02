@@ -1,10 +1,12 @@
-import { decreaseLives, lives, setGameOver, SIZE } from "./state.js";
+import { decreaseLives, lives, setGameOver, SIZE, addScore } from "./state.js";
 import {
 	BULLET_SPEED,
 	ASTEROID_RADIUS_SCALE,
 	ASTEROID_SPEED,
 	SMALL_SAUCER_SCORE_THRESHOLD,
 	INVULNERABILITY_TIME,
+	POINTS_BY_SIZE,
+	SAUCER_POINTS
 } from "./constants.js";
 import { playLaserSound, playExplosionSound, playShipExplosionSound } from "./sound.js";
 
@@ -15,7 +17,7 @@ export function updateShipVelocity(ship) {
 	ship.vy += Math.sin(ship.angle) * ship.thrust;
 }
 
-export function updateShipPosition(ship, asteroids) {
+export function updateShipPosition(ship, asteroids, particles) {
 	ship.vx *= ship.drag;
 	ship.vy *= ship.drag;
 	ship.x += ship.vx;
@@ -35,7 +37,7 @@ export function updateShipPosition(ship, asteroids) {
 			const shipRadius = ship.size * 0.8;
 
 			if (dx * dx + dy * dy < (asteroid.radius + shipRadius) ** 2) {
-				handleShipHit(ship);
+				handleShipHit(ship, particles);
 				splitAsteroid(asteroids, asteroids[j], asteroids[j].size - 1);
 				asteroids.splice(j, 1);
 				break;
@@ -64,7 +66,11 @@ function moveBullets(bullets, size) {
 
 export function updateSaucerBullets(bullets, size, asteroids) {
 	moveBullets(bullets, size);
-	checkBulletsVsCircles(bullets, asteroids, () => {});
+	const hits = [];
+	checkBulletsVsCircles(bullets, asteroids, t => {
+		hits.push({ type: "asteroid", x: t.x, y: t.y, asteroid: t });
+	});
+	return hits;
 }
 
 export function updateShipBullets(bullets, size, asteroids = [], saucers = []) {
@@ -224,6 +230,23 @@ export function spawnAsteroid(asteroids, x, y, size) {
 	});
 }
 
+export function spawnShipExplosion(x, y, particles) {
+	const count = 20;
+	for (let i = 0; i < count; i++) {
+		const angle = (i / count) * Math.PI * 2;
+		const speed = 1.5 + Math.random() * 3;
+		particles.push({
+			x,
+			y,
+			vx: Math.cos(angle) * speed,
+			vy: Math.sin(angle) * speed,
+			life: 1.0,
+			decay: 0.04 + Math.random() * 0.03,
+			size: 1.5 + Math.random() * 1.5,
+		});
+	}
+}
+
 /** Asteroids utilities */
 
 export function getInitialAsteroidVelocities(x, y, size) {
@@ -311,8 +334,9 @@ function spawnSaucerBullet(saucer, saucerBullets, shipX, shipY) {
 }
 
 /** Bullet hits */
-export function handleShipHit(ship) {
+export function handleShipHit(ship, particles) {
 	playShipExplosionSound();
+	spawnShipExplosion(ship.x, ship.y, particles);
 	decreaseLives();
 	if (lives <= 0) {
 		setGameOver(true);
@@ -326,21 +350,21 @@ export function handleShipHit(ship) {
 	}
 }
 
-export function handleBulletHits(hits, asteroids, particles) {
+export function handleBulletHits(hits, asteroids, particles, scored = true) {
 	for (const hit of hits) {
 		if (hit.type === "asteroid") {
 			const size = hit.asteroid.size;
 			spawnAsteroidExplosion(hit.x, hit.y, particles, size);
 			if (size > 1) splitAsteroid(asteroids, hit.asteroid, size - 1);
-			addScore(POINTS_BY_SIZE[size]);
+			if (scored) addScore(POINTS_BY_SIZE[size]);
 		} else if (hit.type === "saucer") {
 			spawnAsteroidExplosion(hit.x, hit.y, particles, 2);
-			addScore(SAUCER_POINTS[hit.saucer.type]);
+			if (scored) addScore(SAUCER_POINTS[hit.saucer.type]);
 		}
 	}
 }
 
-export function checkSaucerBulletsHitShip(saucerBullets, ship) {
+export function checkSaucerBulletsHitShip(saucerBullets, ship, particles) {
 	if (ship.invulnerable > 0) return;
 	for (let i = saucerBullets.length - 1; i >= 0; i--) {
 		const b = saucerBullets[i];
@@ -348,13 +372,13 @@ export function checkSaucerBulletsHitShip(saucerBullets, ship) {
 		const dy = b.y - ship.y;
 		if (dx * dx + dy * dy < (ship.size * 0.8) ** 2) {
 			saucerBullets.splice(i, 1);
-			handleShipHit(ship);
+			handleShipHit(ship, particles);
 			break;
 		}
 	}
 }
 
-export function checkSaucersHitShip(saucers, ship) {
+export function checkSaucersHitShip(saucers, ship, particles) {
 	if (ship.invulnerable > 0) return;
 	for (let i = saucers.length - 1; i >= 0; i--) {
 		const s = saucers[i];
@@ -362,7 +386,7 @@ export function checkSaucersHitShip(saucers, ship) {
 		const dy = s.y - ship.y;
 		if (dx * dx + dy * dy < (s.radius + ship.size * 0.8) ** 2) {
 			saucers.splice(i, 1);
-			handleShipHit(ship);
+			handleShipHit(ship, particles);
 			break;
 		}
 	}
