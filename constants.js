@@ -11,6 +11,7 @@ export const INVULNERABILITY_TIME = 240; // 4 seconds at 60fps
 export const POINTS_BY_SIZE = { 1: 100, 2: 50, 3: 20 }
 export const ASTEROID_RADIUS_SCALE = 18;
 export const ASTEROID_SPEED = 3;
+export const INITIAL_ASTEROIDS_COUNT = 4;
 
 /** Saucers */
 export const SAUCER_POINTS = { big: 200, small: 1000 };

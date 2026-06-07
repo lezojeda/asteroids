@@ -55,6 +55,7 @@ import {
 	saucerSpawnTimer,
 	setSaucerSpawnTimer,
 	clearSaucerBullets,
+	getWave,
 } from "./state.js";
 import { SHOOT_COOLDOWN } from "./constants.js";
 import { isLeft, isRight, isThrust, isShoot } from "./input.js";
@@ -165,8 +166,8 @@ function update() {
 	}
 
 	if (asteroids.length === 0) {
-		incrementWave(); // all asteroids hit, start next wave
-		spawnAsteroids(asteroids, wave);
+		incrementWave();
+		spawnAsteroids(asteroids, getWave());
 		clearSaucers();
 	}
 }

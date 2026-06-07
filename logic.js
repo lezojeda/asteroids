@@ -6,7 +6,8 @@ import {
 	SMALL_SAUCER_SCORE_THRESHOLD,
 	INVULNERABILITY_TIME,
 	POINTS_BY_SIZE,
-	SAUCER_POINTS
+	SAUCER_POINTS,
+	INITIAL_ASTEROIDS_COUNT
 } from "./constants.js";
 import { playLaserSound, playExplosionSound, playShipExplosionSound } from "./sound.js";
 
@@ -193,7 +194,7 @@ export function spawnAsteroidExplosion(x, y, particles, asteroidSize = 1) {
 }
 
 export function spawnAsteroids(asteroids, wave) {
-	const count = Math.min(4 + (wave - 1) * 2, 11);
+	const count = Math.min(INITIAL_ASTEROIDS_COUNT + (wave - 1) * 2, 11);
 	for (let i = 0; i < count; i++) {
 		const { x, y } = randomEdgePosition();
 		spawnAsteroid(asteroids, x, y, 3);

@@ -1,4 +1,8 @@
 - high scores and persist list
+  - sqlite in server
+  - api
+  - update client code with state machine for initial -> see high scores or play -> leave high score after play -> initial
+  - connect client with asteroids api
 - difficulty level -> high scores should depend on this
 - allow player to customize colors/themes
 	- add retro theme based on https://en.wikipedia.org/wiki/Asteroids_(video_game)

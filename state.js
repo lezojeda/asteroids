@@ -67,6 +67,9 @@ export function incrementWave() {
 export function setWave(value) {
 	wave = value;
 }
+export function getWave() {
+	return wave;
+}
 
 export let lives = 3;
 export function decreaseLives() {
