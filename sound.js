@@ -1,7 +1,7 @@
-const laserSound = new Audio("./sounds/laser1.wav");
-const explosionSound = new Audio("./sounds/asteroid_explosion.mp3");
-const shipExplosion = new Audio("./sounds/ship_explosion.wav");
-const thrustSound = new Audio("./sounds/thrusters.mp3");
+const laserSound = new Audio("/asteroids/sounds/laser1.wav");
+const explosionSound = new Audio("/asteroids/sounds/asteroid_explosion.mp3");
+const shipExplosion = new Audio("/asteroids/sounds/ship_explosion.wav");
+const thrustSound = new Audio("/asteroids/sounds/thrusters.mp3");
 thrustSound.loop = true;
 
 laserSound.preload = "auto";
